@@ -12,7 +12,8 @@ class TopicRemote(
 ) : BaseRemote(connectivityWatcher),
     TopicAPI.LoadNewest,
     TopicAPI.LoadDown,
-    TopicAPI.LoadUp {
+    TopicAPI.LoadUp,
+    TopicAPI.CreateTopic {
 
     override suspend fun loadNewestTopics(limit: Int): Set<Topic> = checkGET {
         api.getNewest(limit).mapTo(mutableSetOf()) { it.toTopic() }
@@ -24,5 +25,9 @@ class TopicRemote(
 
     override suspend fun loadUpTopics(date: CATime, limit: Int): Set<Topic> = checkGET {
         api.getNewer(limit, date.timestamp).mapTo(mutableSetOf()) { it.toTopic() }
+    }
+
+    override suspend fun createTopic(title: String, message: String): Topic = checkPOST {
+        api.create(title, message).toTopic()
     }
 }

@@ -21,12 +21,6 @@ val topicRemoteModule = module {
         TopicAPI.LoadUp::class,
         TopicAPI.LoadDown::class,
         TopicAPI.SaveTopics::class,
-    )
-
-    // Bind Create Topic worker
-    single(REMOTE_QUALIFIER) {
-        CreateTopicWorkImpl(get())
-    } binds arrayOf(
-        TopicAPI.CreateTopic::class
+        TopicAPI.CreateTopic::class,
     )
 }
