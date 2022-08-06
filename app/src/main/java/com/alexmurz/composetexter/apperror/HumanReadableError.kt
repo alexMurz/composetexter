@@ -1,6 +1,6 @@
 package com.alexmurz.composetexter.apperror
 
-import com.alexmurz.feature_core.util.containsCause
+import com.alexmurz.composetexter.libcore.util.containsCause
 import kotlinx.coroutines.TimeoutCancellationException
 import retrofit2.HttpException
 import java.io.InterruptedIOException

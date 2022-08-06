@@ -51,9 +51,9 @@ android {
 dependencies {
   implementation project(path: ':libcore')
   implementation project(path: ':libcore:topic')
-  implementation project(path: ':feature')
+  implementation project(path: ':data')
+  implementation project(path: ':data:topic')
 
-  implementation project(path: ':feature:feature_topics')
 
   implementation "androidx.core:core-ktx:$ktx_core_version"
   implementation "androidx.compose.ui:ui:$compose_version"
@@ -67,6 +67,9 @@ dependencies {
 
   // Compose collapsing toolbar
   implementation "me.onebone:toolbar-compose:2.3.3"
+
+  // Compose swipe refresh
+  implementation 'com.google.accompanist:accompanist-swiperefresh:0.18.0'
 
   // Koin
   implementation "io.insert-koin:koin-core:$koin_version"

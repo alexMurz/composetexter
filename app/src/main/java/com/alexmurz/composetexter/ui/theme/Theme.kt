@@ -5,8 +5,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
-import com.alexmurz.feature_topics.ui.topic.TopicViewColors
-import com.alexmurz.feature_topics.ui.topic.TopicViewTheme
+import com.alexmurz.composetexter.ui.topic.TopicViewColors
+import com.alexmurz.composetexter.ui.topic.TopicViewTheme
 
 /* Other default colors to override
   background = Color.White,

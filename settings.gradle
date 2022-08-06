@@ -16,5 +16,5 @@ rootProject.name = "ComposeTexter"
 include ':app'
 include ':libcore'
 include ':libcore:topic'
-include ':feature'
-include ':feature:feature_topics'
+include ':data'
+include ':data:topic'

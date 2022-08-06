@@ -1,6 +1,5 @@
 package com.alexmurz.composetexter.apperror
 
-import com.alexmurz.feature_core.ErrorHandler
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 

@@ -1,0 +1,68 @@
+plugins {
+  id 'com.android.library'
+  id 'org.jetbrains.kotlin.android'
+  id 'kotlin-kapt'
+}
+
+android {
+  compileSdk 32
+
+  defaultConfig {
+    minSdk 21
+    targetSdk 32
+
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    consumerProguardFiles "consumer-rules.pro"
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+    }
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+  kotlinOptions {
+    jvmTarget = '1.8'
+  }
+}
+
+ext {
+  dataImplementation = [
+    // Ktx core
+    'androidx.core:core-ktx:1.8.0',
+
+    // Coroutines
+    "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines_version}",
+
+    // Koin
+    "io.insert-koin:koin-core:$koin_version",
+
+    // Room
+    "androidx.room:room-runtime:$room_version",
+    "androidx.room:room-ktx:$room_version",
+
+    // okhttp
+    "com.squareup.okhttp3:okhttp:4.10.0",
+    // okhttp logging
+    "com.squareup.okhttp3:logging-interceptor:4.10.0",
+
+    // retrofit
+    "com.squareup.retrofit2:retrofit:2.9.0",
+    'com.google.code.gson:gson:2.8.9',
+    'com.squareup.retrofit2:converter-gson:2.5.0',
+  ]
+
+  dataKapt = [
+    "androidx.room:room-compiler:$room_version",
+  ]
+}
+
+dependencies {
+  implementation project(path: ':libcore')
+  for (i in dataImplementation) implementation i
+  for (i in dataKapt) kapt i
+}
