@@ -8,6 +8,15 @@ java {
   targetCompatibility = JavaVersion.VERSION_1_7
 }
 
+ext {
+  coreImplementation = [
+    "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines_version}",
+  ]
+  coreTestImplementation = [
+    'junit:junit:4.13.2',
+  ]
+}
+
 dependencies {
   implementation "joda-time:joda-time:$joda_time_version"
 }
