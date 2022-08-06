@@ -271,6 +271,5 @@ internal class TopicServiceTest {
 
         Assert.assertEquals(emptySet<Topic>(), service.updateTopics(context))
         Assert.assertEquals(true, context.upToDate)
-
     }
 }

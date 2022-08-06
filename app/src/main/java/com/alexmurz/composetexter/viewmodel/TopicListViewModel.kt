@@ -85,7 +85,9 @@ class TopicListViewModel :
         scope.launch {
             mIsUpdating.withFlag {
                 log("update - get and add topics ...")
-                runForTopics { service.updateTopics(context) }
+                do {
+                    runForTopics { service.updateTopics(context) }
+                } while (!context.upToDate)
             } ?: log("update - skipped, busy")
             log("update - complete")
         }
