@@ -37,7 +37,7 @@ class TopicListViewModel :
 
     private val errorRelay by inject<ErrorHandler>()
     private val service by inject<TopicService>()
-    val context by lazy { service.createNewContext(LIMIT) }
+    private val context by lazy { service.createNewContext(LIMIT) }
 
     private val mIsUpdating = MutableStateFlow(false)
     private val mIsLoadingMore = MutableStateFlow(false)
@@ -58,6 +58,11 @@ class TopicListViewModel :
     override fun onCleared() {
         super.onCleared()
         scope.cancel()
+    }
+
+    fun addExternalTopics(topics: Set<Topic>) {
+        context.addTopics(topics)
+        addTopics(topics)
     }
 
     @Synchronized

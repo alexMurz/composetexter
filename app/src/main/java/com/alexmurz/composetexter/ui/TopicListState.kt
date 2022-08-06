@@ -15,9 +15,7 @@ class TopicListState(
     internal val initializeViewModel: AtomicBoolean,
 ) {
     fun onTopicCreated(topic: Topic) {
-        val topics = setOf(topic)
-        viewModel.context.addTopics(topics)
-        viewModel.addTopics(topics)
+        viewModel.addExternalTopics(setOf(topic))
     }
 }
 
