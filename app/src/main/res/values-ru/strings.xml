@@ -1,3 +1,7 @@
 <resources>
   <string name="no_content">Здесь пока ничего нет</string>
+  <string name="create_topic">Создать тему</string>
+  <string name="title">Заголовок</string>
+  <string name="message">Сообщение</string>
+  <string name="create">Создать</string>
 </resources>

@@ -82,12 +82,9 @@ class TopicService(
     }
 
     suspend fun createTopic(
-        context: TopicServiceContext,
         title: String,
         message: String
     ): Topic = createNewTopic.createTopic(title, message).also { topic ->
-        val set = setOf(topic)
-        context.addTopics(set)
-        localSaveTopics.saveTopics(set)
+        localSaveTopics.saveTopics(setOf(topic))
     }
 }

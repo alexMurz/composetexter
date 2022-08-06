@@ -1,12 +1,12 @@
 package com.alexmurz.composetexter.ui
 
-import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alexmurz.composetexter.viewmodel.TopicListViewModel
+import com.alexmurz.topic.model.Topic
 import java.util.concurrent.atomic.AtomicBoolean
 
 class TopicListState(
@@ -14,14 +14,10 @@ class TopicListState(
     internal val lazyListState: LazyListState,
     internal val initializeViewModel: AtomicBoolean,
 ) {
-
-    /**
-     * Request update list
-     *
-     * Should be used after creating new item
-     */
-    fun updateList() {
-        initializeViewModel.set(true)
+    fun onTopicCreated(topic: Topic) {
+        val topics = setOf(topic)
+        viewModel.context.addTopics(topics)
+        viewModel.addTopics(topics)
     }
 }
 
@@ -31,7 +27,6 @@ fun rememberTopicListState(): TopicListState {
     val lazyListState = rememberLazyListState()
 
     return remember {
-        Log.i("AAAQQQ", "Create state")
         TopicListState(
             viewModel = viewModel,
             lazyListState = lazyListState,

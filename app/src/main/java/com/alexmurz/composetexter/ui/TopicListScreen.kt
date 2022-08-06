@@ -35,7 +35,12 @@ fun TopicListScreen() {
     ) {
         when (it) {
             State.List -> ListView(topicListState) { state = State.Create }
-            State.Create -> CreateView { state = State.List }
+            State.Create -> TopicCreate { topic ->
+                if (topic != null) topicListState.onTopicCreated(topic)
+                state = State.List
+            }
+
+//            CreateView { state = State.List }
         }
     }
 }
@@ -70,45 +75,45 @@ private fun ListView(
 private fun CreateView(
     onCompleted: () -> Unit,
 ) {
-    val currentOnCompleted by rememberUpdatedState(onCompleted)
-
-    val scope = rememberCoroutineScope()
-
-    var busy by remember {
-        mutableStateOf(false)
-    }
-
-    BackHandler(enabled = true) {
-        if (!busy) currentOnCompleted()
-    }
-
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text(
-            text = "Create view",
-            modifier = Modifier.fillMaxWidth()
-        )
-        Button(
-            enabled = !busy,
-            onClick = {
-                scope.launch {
-                    busy = true
-                    delay(1_500)
-                    currentOnCompleted()
-                }
-            }
-        ) {
-            Text("Create test")
-        }
-        AnimatedVisibility(
-            visible = busy,
-            enter = fadeIn(),
-            exit = fadeOut(),
-        ) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-        }
-    }
+//    val currentOnCompleted by rememberUpdatedState(onCompleted)
+//
+//    val scope = rememberCoroutineScope()
+//
+//    var busy by remember {
+//        mutableStateOf(false)
+//    }
+//
+//    BackHandler(enabled = true) {
+//        if (!busy) currentOnCompleted()
+//    }
+//
+//    Column(
+//        modifier = Modifier.fillMaxSize()
+//    ) {
+//        Text(
+//            text = "Create view",
+//            modifier = Modifier.fillMaxWidth()
+//        )
+//        Button(
+//            enabled = !busy,
+//            onClick = {
+//                scope.launch {
+//                    busy = true
+//                    delay(1_500)
+//                    currentOnCompleted()
+//                }
+//            }
+//        ) {
+//            Text("Create test")
+//        }
+//        AnimatedVisibility(
+//            visible = busy,
+//            enter = fadeIn(),
+//            exit = fadeOut(),
+//        ) {
+//            CircularProgressIndicator(
+//                modifier = Modifier.align(Alignment.CenterHorizontally)
+//            )
+//        }
+//    }
 }

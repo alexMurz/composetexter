@@ -37,7 +37,7 @@ class TopicListViewModel :
 
     private val errorRelay by inject<ErrorHandler>()
     private val service by inject<TopicService>()
-    private val context by lazy { service.createNewContext(LIMIT) }
+    val context by lazy { service.createNewContext(LIMIT) }
 
     private val mIsUpdating = MutableStateFlow(false)
     private val mIsLoadingMore = MutableStateFlow(false)
@@ -61,7 +61,7 @@ class TopicListViewModel :
     }
 
     @Synchronized
-    private fun addTopics(topics: Iterable<Topic>) {
+    fun addTopics(topics: Iterable<Topic>) {
         val newTopicIds = topics.map { it.id }
         val newList = this.topics.value.toMutableList()
         newList.removeAll { it.id in newTopicIds }

@@ -1,4 +1,8 @@
 <resources>
   <string name="app_name">ComposeTexter</string>
   <string name="no_content">No content</string>
+  <string name="create_topic">Create topic</string>
+  <string name="title">Title</string>
+  <string name="message">Message</string>
+  <string name="create">Create</string>
 </resources>
