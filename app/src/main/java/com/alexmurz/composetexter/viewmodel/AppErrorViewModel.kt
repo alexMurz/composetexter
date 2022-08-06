@@ -2,6 +2,7 @@ package com.alexmurz.composetexter.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.alexmurz.composetexter.apperror.AppErrorWrapper
 import com.alexmurz.composetexter.apperror.ErrorHandler
 import com.alexmurz.composetexter.apperror.HumanReadableError
@@ -11,48 +12,42 @@ import org.koin.core.component.inject
 import java.util.concurrent.atomic.AtomicInteger
 
 class AppErrorViewModel : ViewModel(), KoinComponent {
-    private val relay by inject<ErrorHandler>()
+    private val handler by inject<ErrorHandler>()
 
-    private val job = Job()
-    private val scope = CoroutineScope(Dispatchers.Default + job)
     private var seqId = AtomicInteger(0)
 
     val errorList = mutableStateOf<List<AppErrorWrapper>>(emptyList())
 
     private inline fun applyErrorList(action: MutableList<AppErrorWrapper>.() -> Boolean) {
-        synchronized(errorList) {
-            val list = errorList.value.toMutableList()
-            if (action(list)) {
-                errorList.value = list
-            }
+        val list = errorList.value.toMutableList()
+        if (action(list)) {
+            errorList.value = list
         }
     }
 
     init {
-        scope.launch {
+        viewModelScope.launch {
             while (isActive) {
-                val throwable = relay.consumeError()
-                val error = HumanReadableError.parseThrowable(throwable) ?: throw Throwable(
-                    "Failed to process as HumanReadableError, most likely fatal error",
-                    throwable
-                )
-
-                error.printStackTrace()
-
-                val wrapper = AppErrorWrapper(
-                    error = error,
-                    seqId = seqId.getAndIncrement(),
-                )
-                applyErrorList {
-                    add(wrapper)
-                }
+                processThrowable(handler.consumeError())
             }
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        job.complete()
+    private fun processThrowable(throwable: Throwable) {
+        val error = HumanReadableError.parseThrowable(throwable) ?: throw Throwable(
+            "Failed to process as HumanReadableError, most likely fatal error",
+            throwable
+        )
+
+        error.printStackTrace()
+
+        val wrapper = AppErrorWrapper(
+            error = error,
+            seqId = seqId.getAndIncrement(),
+        )
+        applyErrorList {
+            add(wrapper)
+        }
     }
 
     fun onErrorDismiss(error: AppErrorWrapper) {
