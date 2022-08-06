@@ -21,14 +21,38 @@ class TopicService(
     fun createNewContext(limit: Int): TopicServiceContext {
         return TopicServiceContext(
             limit = limit,
-            initialTopics = emptySet(),
-            upToDate = false,
-            hasMoreLocal = true,
-            hasMoreRemote = true,
         )
     }
 
+    /**
+     * Initialize from local source
+     * Return null if already initialized or no data to available
+     */
+    private suspend fun requireInitialization(context: TopicServiceContext): Set<Topic>? {
+        if (context.initialized) return null
+
+        return localLoadNewest.loadNewestTopics(context.limit).also {
+            context.initialized = true
+            context.addTopics(it)
+        }.takeIf { it.isNotEmpty() }
+    }
+
+    /**
+     * Initialize context from locally available data
+     */
+    suspend fun initialize(context: TopicServiceContext): Set<Topic> {
+        return requireInitialization(context) ?: emptySet()
+    }
+
+    /**
+     * Update local data from remote source
+     */
     suspend fun updateTopics(context: TopicServiceContext): Set<Topic> {
+        requireInitialization(context)?.let {
+            context.upToDate = false
+            return it
+        }
+
         val limit = context.limit
 
         val topics = when (val newestTopic = context.topics.maxByOrNull { it.date }) {
@@ -45,7 +69,12 @@ class TopicService(
         return topics
     }
 
+    /**
+     * Load older content from remote source
+     */
     suspend fun loadMoreTopics(context: TopicServiceContext): Set<Topic> {
+        requireInitialization(context)?.let { return it }
+
         if (!context.hasMoreLocal && !context.hasMoreRemote) return emptySet()
 
         val limit = context.limit

@@ -1,19 +1,23 @@
 package com.alexmurz.topic.service
 
 import com.alexmurz.composetexter.libcore.CATime
-import com.alexmurz.topic.model.Topic
 import com.alexmurz.topic.api.TopicAPI
+import com.alexmurz.topic.model.Topic
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Test
 
 private class ListTopicsStorage(
-    list: List<Topic>
+    private val list: MutableList<Topic>
 ) : TopicAPI.LoadDown,
     TopicAPI.LoadNewest,
     TopicAPI.LoadUp,
-    TopicAPI.SaveTopics {
-    val list = list.sortedByDescending { it.date }.toMutableList()
+    TopicAPI.SaveTopics,
+    TopicAPI.CreateTopic {
+
+    init {
+        list.sortByDescending { it.date }
+    }
 
     override suspend fun loadNewestTopics(limit: Int): Set<Topic> {
         return list.asSequence().take(limit).toSet()
@@ -38,13 +42,26 @@ private class ListTopicsStorage(
         list.addAll(topics)
         list.sortByDescending { it.date }
     }
+
+    override suspend fun createTopic(title: String, message: String): Topic {
+        return Topic(
+            id = list.size.toLong(),
+            date = CATime.now(),
+            title = title,
+            message = message,
+            attachments = emptyList()
+        ).also {
+            list.add(0, it)
+        }
+    }
 }
 
 private object StubTopicsStorage :
     TopicAPI.LoadNewest,
     TopicAPI.LoadDown,
     TopicAPI.LoadUp,
-    TopicAPI.SaveTopics {
+    TopicAPI.SaveTopics,
+    TopicAPI.CreateTopic {
 
     override suspend fun loadNewestTopics(limit: Int): Set<Topic> {
         throw UnsupportedOperationException()
@@ -62,6 +79,9 @@ private object StubTopicsStorage :
         throw UnsupportedOperationException()
     }
 
+    override suspend fun createTopic(title: String, message: String): Topic {
+        throw UnsupportedOperationException()
+    }
 }
 
 internal class TopicServiceTest {
@@ -74,24 +94,49 @@ internal class TopicServiceTest {
         attachments = emptyList()
     )
 
+    private fun service(
+        remoteList: MutableList<Topic>,
+        localList: MutableList<Topic>
+    ): TopicService {
+        val remote = ListTopicsStorage(remoteList)
+        val local = ListTopicsStorage(localList)
+        return TopicService(
+            remoteLoadDown = remote,
+            remoteLoadUp = remote,
+            remoteLoadNewest = remote,
+            createNewTopic = remote,
+            localLoadDownPage = local,
+            localLoadNewest = local,
+            localSaveTopics = local,
+        )
+    }
+
+    private fun service(
+        localList: MutableList<Topic>
+    ): TopicService {
+        val local = ListTopicsStorage(localList)
+        return TopicService(
+            remoteLoadDown = StubTopicsStorage,
+            remoteLoadUp = StubTopicsStorage,
+            remoteLoadNewest = StubTopicsStorage,
+            createNewTopic = StubTopicsStorage,
+            localLoadDownPage = local,
+            localLoadNewest = local,
+            localSaveTopics = local,
+        )
+    }
+
     @Test
     fun `should load topics from database`() = runBlocking {
         val limit = 5
 
         val topicsList = (0 until limit * 3).mapTo(mutableListOf(), ::topic)
 
-        val remote = ListTopicsStorage(emptyList())
-        val local = ListTopicsStorage(topicsList)
+        val service = service(mutableListOf(), topicsList)
 
-        val service = TopicService(
-            remoteLoadDown = remote,
-            remoteLoadUp = remote,
-            remoteLoadNewest = remote,
-            localLoadDownPage = local,
-            localLoadNewest = local,
-            localSaveTopics = local,
-        )
         val context = service.createNewContext(limit)
+        service.initialize(context)
+
         Assert.assertEquals(topicsList.take(limit).toSet(), context.topics)
 
         val secondPack = service.loadMoreTopics(context)
@@ -109,35 +154,30 @@ internal class TopicServiceTest {
 
         val topicsList = (0 until limit * 3).mapTo(mutableListOf(), ::topic)
 
-        val remote = ListTopicsStorage(topicsList)
-        val local = ListTopicsStorage(emptyList())
+        val local = mutableListOf<Topic>()
 
-        val service = TopicService(
-            remoteLoadDown = remote,
-            remoteLoadUp = remote,
-            remoteLoadNewest = remote,
-            localLoadDownPage = local,
-            localLoadNewest = local,
-            localSaveTopics = local,
-        )
+        val service = service(topicsList, local)
         val context = service.createNewContext(limit)
+        service.initialize(context)
+        Assert.assertEquals(emptySet<Topic>(), context.topics)
 
+        Assert.assertEquals(topicsList.take(limit).toSet(), service.updateTopics(context))
         Assert.assertEquals(topicsList.take(limit).toSet(), context.topics)
-        Assert.assertEquals(topicsList.take(limit).toSet(), local.list.toSet())
+        Assert.assertEquals(topicsList.take(limit).toSet(), local.toSet())
 
         Assert.assertEquals(
             topicsList.drop(limit).take(limit).toSet(),
             service.loadMoreTopics(context)
         )
         Assert.assertEquals(topicsList.take(limit * 2).toSet(), context.topics)
-        Assert.assertEquals(topicsList.take(limit * 2).toSet(), local.list.toSet())
+        Assert.assertEquals(topicsList.take(limit * 2).toSet(), local.toSet())
 
         Assert.assertEquals(
             topicsList.drop(limit * 2).take(limit).toSet(),
             service.loadMoreTopics(context)
         )
         Assert.assertEquals(topicsList.take(limit * 3).toSet(), context.topics)
-        Assert.assertEquals(topicsList.take(limit * 3).toSet(), local.list.toSet())
+        Assert.assertEquals(topicsList.take(limit * 3).toSet(), local.toSet())
     }
 
     @Test
@@ -146,32 +186,21 @@ internal class TopicServiceTest {
         val limit = 5
 
         val topicsList = (0 until limit * 3).mapTo(mutableListOf(), ::topic)
+        val local = mutableListOf<Topic>()
 
-        val remote = ListTopicsStorage(topicsList)
-        val local = ListTopicsStorage(emptyList())
-
-        var service = TopicService(
-            remoteLoadDown = remote,
-            remoteLoadUp = remote,
-            remoteLoadNewest = remote,
-            localLoadDownPage = local,
-            localLoadNewest = local,
-            localSaveTopics = local,
-        )
+        var service = service(topicsList, local)
         var context = service.createNewContext(limit)
+        service.initialize(context)
+
+        // Load 3 packs to local storage
+        service.loadMoreTopics(context)
         service.loadMoreTopics(context)
         service.loadMoreTopics(context)
 
         // Reset service and context, keeping localTopics instance as database
-        service = TopicService(
-            remoteLoadDown = StubTopicsStorage,
-            remoteLoadUp = StubTopicsStorage,
-            remoteLoadNewest = StubTopicsStorage,
-            localLoadDownPage = local,
-            localLoadNewest = local,
-            localSaveTopics = local,
-        )
+        service = service(localList = local)
         context = service.createNewContext(limit)
+        service.initialize(context)
 
         Assert.assertEquals(topicsList.take(limit).toSet(), context.topics)
 
@@ -195,26 +224,38 @@ internal class TopicServiceTest {
         val allTopics = (0 until limit * 10).mapTo(mutableListOf(), ::topic)
         val currentTopics = allTopics.drop(limit * 5)
 
-        val remote = ListTopicsStorage(currentTopics)
-        val local = ListTopicsStorage(emptyList())
+        val remote = currentTopics.toMutableList()
+        val local = mutableListOf<Topic>()
 
-        val service = TopicService(
-            remoteLoadDown = remote,
-            remoteLoadUp = remote,
-            remoteLoadNewest = remote,
-            localLoadDownPage = local,
-            localLoadNewest = local,
-            localSaveTopics = local,
-        )
+        val service = service(remote, local)
         val context = service.createNewContext(limit)
+        service.initialize(context)
+
+        // Load 5 packs
+        service.loadMoreTopics(context)
         service.loadMoreTopics(context)
         service.loadMoreTopics(context)
         service.loadMoreTopics(context)
         service.loadMoreTopics(context)
         Assert.assertEquals(currentTopics.toSet(), context.topics)
 
+        fun test(
+            offset: Int,
+            expect: Set<Topic>,
+            complete: Boolean
+        ) {
+            val crop = allTopics.drop(limit * offset)
+            Assert.assertEquals(
+                crop.take(limit).toSet(),
+                expect
+            )
+            Assert.assertEquals(crop.toSet(), context.topics)
+            Assert.assertEquals(complete, context.upToDate)
+
+        }
+
         // Update `remote` list with new content
-        remote.list.apply {
+        remote.apply {
             clear()
             addAll(allTopics)
             sortByDescending { it.date }
@@ -222,44 +263,11 @@ internal class TopicServiceTest {
 
         Assert.assertEquals(allTopics.drop(limit * 5).toSet(), context.topics)
 
-        Assert.assertEquals(
-            allTopics.drop(limit * 4).take(limit).toSet(),
-            service.updateTopics(context)
-        )
-        Assert.assertEquals(allTopics.drop(limit * 4).toSet(), context.topics)
-        Assert.assertEquals(false, context.upToDate)
-
-
-        Assert.assertEquals(
-            allTopics.drop(limit * 3).take(limit).toSet(),
-            service.updateTopics(context)
-        )
-        Assert.assertEquals(allTopics.drop(limit * 3).toSet(), context.topics)
-        Assert.assertEquals(false, context.upToDate)
-
-
-        Assert.assertEquals(
-            allTopics.drop(limit * 2).take(limit).toSet(),
-            service.updateTopics(context)
-        )
-        Assert.assertEquals(allTopics.drop(limit * 2).toSet(), context.topics)
-        Assert.assertEquals(false, context.upToDate)
-
-
-        Assert.assertEquals(
-            allTopics.drop(limit).take(limit).toSet(),
-            service.updateTopics(context)
-        )
-        Assert.assertEquals(allTopics.drop(limit).toSet(), context.topics)
-        Assert.assertEquals(false, context.upToDate)
-
-
-        Assert.assertEquals(
-            allTopics.take(limit).toSet(),
-            service.updateTopics(context)
-        )
-        Assert.assertEquals(allTopics.toSet(), context.topics)
-        Assert.assertEquals(false, context.upToDate)
+        test(4, service.updateTopics(context), false)
+        test(3, service.updateTopics(context), false)
+        test(2, service.updateTopics(context), false)
+        test(1, service.updateTopics(context), false)
+        test(0, service.updateTopics(context), false)
 
         Assert.assertEquals(emptySet<Topic>(), service.updateTopics(context))
         Assert.assertEquals(true, context.upToDate)

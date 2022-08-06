@@ -12,29 +12,29 @@ class TopicServiceContext internal constructor(
      * Size of single `pack`
      */
     val limit: Int,
-    initialTopics: Set<Topic>,
-    upToDate: Boolean,
-    hasMoreLocal: Boolean,
-    hasMoreRemote: Boolean
 ) {
 
-    private val topicsHolder = AtomicReference(initialTopics)
+    private val topicsHolder = AtomicReference(emptySet<Topic>())
 
 
     // Hot cached topics
     val topics: Set<Topic>
         get() = topicsHolder.get()
 
+    // True is context initialized from local storage
+    var initialized = false
+        internal set
+
     // True then all updates complete
-    var upToDate = upToDate
+    var upToDate = false
         internal set
 
     // True is database data is not exhausted
-    var hasMoreLocal = hasMoreLocal
+    var hasMoreLocal = true
         internal set
 
     // True is remote data is not exhausted
-    var hasMoreRemote = hasMoreRemote
+    var hasMoreRemote = true
         internal set
 
     /**
