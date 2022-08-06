@@ -11,6 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,6 +30,8 @@ fun TopicCreate(
 
     val titleValue by viewModel.titleFieldStateFlow.collectAsState()
     val messageValue by viewModel.messageFieldStateFlow.collectAsState()
+
+    val focus = LocalFocusManager.current
 
     var busy by remember {
         mutableStateOf(false)
@@ -74,6 +77,7 @@ fun TopicCreate(
             modifier = Modifier.align(Alignment.End),
             enabled = !busy,
             onClick = {
+                focus.clearFocus(true)
                 scope.launch {
                     busy = true
                     val topic = viewModel.createTopic()
@@ -94,13 +98,14 @@ fun TopicCreate(
 
 @Composable
 private fun Field(
+    modifier: Modifier = Modifier,
     value: String,
     placeholder: String,
     busy: Boolean,
     onValueChanged: (String) -> Unit
 ) {
     TextField(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         value = value,
         enabled = !busy,
         placeholder = {
