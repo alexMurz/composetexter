@@ -7,12 +7,16 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,6 +40,28 @@ fun TopicCreate(
     var busy by remember {
         mutableStateOf(false)
     }
+
+    val createTopicAction: () -> Unit by rememberUpdatedState {
+        focus.clearFocus(true)
+        scope.launch {
+            busy = true
+            val topic = viewModel.createTopic()
+            if (topic != null) {
+                onComplete(topic)
+            } else {
+                busy = false
+            }
+        }
+    }
+
+    val keyboardActions = KeyboardActions(
+        onNext = {
+            focus.moveFocus(FocusDirection.Next)
+        },
+        onGo = {
+            createTopicAction()
+        }
+    )
 
     BackHandler {
         if (!busy) onComplete(null)
@@ -64,30 +90,27 @@ fun TopicCreate(
             value = titleValue.value,
             placeholder = stringResource(id = R.string.title),
             busy = busy,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next,
+            ),
+            keyboardActions = keyboardActions,
             onValueChanged = { viewModel.onTitleChanged(it) }
         )
         Field(
             value = messageValue.value,
             placeholder = stringResource(id = R.string.message),
             busy = busy,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Go,
+            ),
+            keyboardActions = keyboardActions,
             onValueChanged = { viewModel.onMessageChanged(it) }
         )
 
         Button(
             modifier = Modifier.align(Alignment.End),
             enabled = !busy,
-            onClick = {
-                focus.clearFocus(true)
-                scope.launch {
-                    busy = true
-                    val topic = viewModel.createTopic()
-                    if (topic != null) {
-                        onComplete(topic)
-                    } else {
-                        busy = false
-                    }
-                }
-            }
+            onClick = createTopicAction
         ) {
             Text(
                 text = stringResource(id = R.string.create),
@@ -102,6 +125,8 @@ private fun Field(
     value: String,
     placeholder: String,
     busy: Boolean,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(),
+    keyboardActions: KeyboardActions = KeyboardActions(),
     onValueChanged: (String) -> Unit
 ) {
     TextField(
@@ -111,7 +136,10 @@ private fun Field(
         placeholder = {
             Text(placeholder)
         },
-        onValueChange = onValueChanged
+        onValueChange = onValueChanged,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
+        singleLine = true,
     )
 }
 
