@@ -19,4 +19,6 @@ ext {
 
 dependencies {
   implementation "joda-time:joda-time:$joda_time_version"
+  for (i in coreImplementation) implementation i
+  for (i in coreTestImplementation) testImplementation i
 }

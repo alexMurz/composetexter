@@ -10,8 +10,6 @@ java {
 
 dependencies {
   implementation project(path: ':libcore')
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines_version}")
-
   for (i in coreImplementation) implementation i
   for (i in coreTestImplementation) testImplementation i
 }
