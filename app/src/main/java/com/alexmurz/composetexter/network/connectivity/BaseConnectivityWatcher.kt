@@ -1,12 +1,9 @@
 package com.alexmurz.composetexter.network.connectivity
 
-import com.alexmurz.composetexter.util.getAndUpdateValue
+import com.alexmurz.feature_core.util.getAndUpdateValue
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import java.util.concurrent.atomic.AtomicReference
 
 /**

@@ -5,11 +5,9 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
-import com.alexmurz.composetexter.util.AndroidLoggable
-import com.alexmurz.composetexter.util.Loggable
+import com.alexmurz.feature_core.util.AndroidLoggable
+import com.alexmurz.feature_core.util.Loggable
 
 //@RequiresApi(Build.VERSION_CODES.M)
 internal class Api23ConnectivityWatcher(

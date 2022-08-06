@@ -4,14 +4,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.alexmurz.composetexter.apperror.AppErrorWrapper
 import com.alexmurz.composetexter.apperror.HumanReadableError
-import com.alexmurz.composetexter.apperror.service.AppErrorHandler
+import com.alexmurz.feature_core.ErrorHandler
 import kotlinx.coroutines.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.atomic.AtomicInteger
 
 class AppErrorViewModel : ViewModel(), KoinComponent {
-    private val relay by inject<AppErrorHandler>()
+    private val relay by inject<ErrorHandler>()
 
     private val job = Job()
     private val scope = CoroutineScope(Dispatchers.Default + job)

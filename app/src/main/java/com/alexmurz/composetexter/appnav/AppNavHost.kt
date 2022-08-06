@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.alexmurz.composetexter.modules.topic.ui.TopicList
+import com.alexmurz.composetexter.modules.inbox.ui.Inbox
+
+private const val ROUTE_INBOX = "inbox"
 
 @Composable
 fun AppNavHost() {
@@ -12,10 +14,10 @@ fun AppNavHost() {
 
     NavHost(
         navController = navController,
-        startDestination = "inbox",
+        startDestination = ROUTE_INBOX,
     ) {
-        composable("inbox") {
-            TopicList()
+        composable(ROUTE_INBOX) {
+            Inbox()
         }
     }
 }

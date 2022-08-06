@@ -3,10 +3,10 @@ package com.alexmurz.composetexter.modules.topic.storage
 import com.alexmurz.composetexter.libcore.CATime
 import com.alexmurz.composetexter.modules.topic.dao.TopicDao
 import com.alexmurz.composetexter.modules.topic.mapper.TopicEntityMapper
-import com.alexmurz.composetexter.util.AndroidLoggable
-import com.alexmurz.composetexter.util.Loggable
-import com.alexmurz.topic.model.Topic
+import com.alexmurz.feature_core.util.AndroidLoggable
+import com.alexmurz.feature_core.util.Loggable
 import com.alexmurz.topic.api.TopicAPI
+import com.alexmurz.topic.model.Topic
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
