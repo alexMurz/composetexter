@@ -51,8 +51,10 @@ android {
 dependencies {
   implementation project(path: ':libcore')
   implementation project(path: ':libcore:topic')
+  implementation project(path: ':libcore:message')
   implementation project(path: ':data')
   implementation project(path: ':data:topic')
+  implementation project(path: ':data:message')
 
 
   implementation "androidx.core:core-ktx:$ktx_core_version"

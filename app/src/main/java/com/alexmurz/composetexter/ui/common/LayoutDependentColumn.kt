@@ -97,8 +97,13 @@ fun LayoutDependentColumn(
         val primarySize = primaryPlaceables.columnSize()
         val dependentSize = dependentPlaceables.columnSize()
 
+
+        val totalWidth = primarySize.width + dependentSize.width
+        val width = if (totalWidth < constraints.maxWidth) totalWidth
+        else max(primarySize.width, dependentSize.width)
+
         layout(
-            width = max(primarySize.width, dependentSize.width),
+            width = width,
             height = primarySize.height + dependentSize.height - intersection
         ) {
             var yPos = 0
@@ -109,7 +114,7 @@ fun LayoutDependentColumn(
 
             yPos -= intersection
             dependentPlaceables.forEach {
-                it.placeRelative(constraints.maxWidth - it.width, yPos)
+                it.placeRelative(width - it.width, yPos)
                 yPos += it.height
             }
         }

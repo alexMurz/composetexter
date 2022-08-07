@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.alexmurz.composetexter.apperror.appErrorModule
 import com.alexmurz.data.network.apiModule
+import com.alexmurz.message.messageModule
 import com.alexmurz.topic.topicModule
 import org.koin.core.context.startKoin
 import org.koin.core.module.dsl.singleOf
@@ -16,7 +17,7 @@ class App : Application() {
         super.onCreate()
         startKoin {
             printLogger()
-            modules(appModule, apiModule, topicModule)
+            modules(appModule, apiModule, topicModule, messageModule)
         }
     }
 

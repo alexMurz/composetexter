@@ -4,9 +4,9 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -32,6 +32,8 @@ fun TopicCreate(
 ) {
     val scope = rememberCoroutineScope()
 
+    val currentOnComplete = rememberUpdatedState(onComplete)
+
     val titleValue by viewModel.titleFieldStateFlow.collectAsState()
     val messageValue by viewModel.messageFieldStateFlow.collectAsState()
 
@@ -47,7 +49,7 @@ fun TopicCreate(
             busy = true
             val topic = viewModel.createTopic()
             if (topic != null) {
-                onComplete(topic)
+                currentOnComplete.value(topic)
             } else {
                 busy = false
             }
@@ -64,57 +66,93 @@ fun TopicCreate(
     )
 
     BackHandler {
-        if (!busy) onComplete(null)
+        if (!busy) currentOnComplete.value(null)
     }
 
-    Column {
-        AnimatedVisibility(
-            visible = busy,
-            enter = fadeIn(),
-            exit = fadeOut(),
-        ) {
-            LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth()
+    val outerBoxModifier = remember {
+        Modifier
+            .fillMaxSize()
+            .clickable(
+                interactionSource = MutableInteractionSource(),
+                indication = null,
+                onClick = {
+                    focus.clearFocus(true)
+                    if (!busy) currentOnComplete.value(null)
+                }
             )
+    }
+
+    Box(modifier = outerBoxModifier) {
+        val surfaceModifier = remember {
+            Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .align(Alignment.BottomCenter)
+                .clickable(
+                    interactionSource = MutableInteractionSource(),
+                    indication = null,
+                    onClick = {}
+                )
         }
-
-        Text(
-            text = stringResource(id = R.string.create_topic),
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(bottom = 5.dp),
-        )
-
-        Field(
-            value = titleValue.value,
-            placeholder = stringResource(id = R.string.title),
-            busy = busy,
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next,
-            ),
-            keyboardActions = keyboardActions,
-            onValueChanged = { viewModel.onTitleChanged(it) }
-        )
-        Field(
-            value = messageValue.value,
-            placeholder = stringResource(id = R.string.message),
-            busy = busy,
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Go,
-            ),
-            keyboardActions = keyboardActions,
-            onValueChanged = { viewModel.onMessageChanged(it) }
-        )
-
-        Button(
-            modifier = Modifier.align(Alignment.End),
-            enabled = !busy,
-            onClick = createTopicAction
+        Surface(
+            modifier = surfaceModifier,
+            elevation = 20.dp,
         ) {
-            Text(
-                text = stringResource(id = R.string.create),
-            )
+            Column(
+                modifier = Modifier.padding(bottom = 20.dp),
+            ) {
+                AnimatedVisibility(
+                    visible = busy,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                ) {
+                    LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                Text(
+                    text = stringResource(id = R.string.create_topic),
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(
+                            top = 10.dp,
+                            bottom = 10.dp
+                        ),
+                )
+
+                Field(
+                    value = titleValue.value,
+                    placeholder = stringResource(id = R.string.title),
+                    busy = busy,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next,
+                    ),
+                    keyboardActions = keyboardActions,
+                    onValueChanged = { viewModel.onTitleChanged(it) }
+                )
+                Field(
+                    value = messageValue.value,
+                    placeholder = stringResource(id = R.string.message),
+                    busy = busy,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Go,
+                    ),
+                    keyboardActions = keyboardActions,
+                    onValueChanged = { viewModel.onMessageChanged(it) }
+                )
+
+                Button(
+                    modifier = Modifier.align(Alignment.End),
+                    enabled = !busy,
+                    onClick = createTopicAction
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.create),
+                    )
+                }
+            }
         }
     }
 }
@@ -146,7 +184,5 @@ private fun Field(
 @Preview
 @Composable
 private fun Preview() {
-    TopicCreate {
-
-    }
+    TopicCreate {}
 }

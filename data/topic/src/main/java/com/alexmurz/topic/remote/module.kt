@@ -20,7 +20,6 @@ val topicRemoteModule = module {
         TopicAPI.LoadNewest::class,
         TopicAPI.LoadNewer::class,
         TopicAPI.LoadOlder::class,
-        TopicAPI.SaveTopics::class,
         TopicAPI.CreateTopic::class,
     )
 }

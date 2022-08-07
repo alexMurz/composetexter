@@ -76,8 +76,8 @@ class TopicListViewModel :
     }
 
     // Run action to get new topics with error handling
-    private inline fun runForTopics(action: () -> Iterable<Topic>) {
-        errorRelay.withErrorHandling(action)?.let(this::addTopics)
+    private inline fun runForTopics(action: () -> Iterable<Topic>): Boolean {
+        return errorRelay.withErrorHandling(action)?.let(this::addTopics) != null
     }
 
     fun update() {
@@ -86,8 +86,8 @@ class TopicListViewModel :
             mIsUpdating.withFlag {
                 log("update - get and add topics ...")
                 do {
-                    runForTopics { service.loadNewer(context) }
-                } while (!context.upToDate)
+                    val success = runForTopics { service.loadNewer(context) }
+                } while (success && !context.upToDate)
             } ?: log("update - skipped, busy")
             log("update - complete")
         }

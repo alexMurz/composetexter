@@ -1,15 +1,23 @@
 package com.alexmurz.composetexter.ui
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.animation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.alexmurz.topic.model.Topic
 
 private enum class State {
     List, Create;
@@ -24,23 +32,11 @@ fun TopicListScreen() {
 
     val topicListState = rememberTopicListState()
 
-    AnimatedContent(
-        targetState = state,
-        transitionSpec = {
-            when (targetState) {
-                State.List -> fadeIn() with slideOut { IntOffset(it.width, 0) }
-                State.Create -> slideIn { IntOffset(it.width, 0) } with fadeOut()
-            }
-        },
-    ) {
-        when (it) {
-            State.List -> ListView(topicListState) { state = State.Create }
-            State.Create -> TopicCreate { topic ->
-                if (topic != null) topicListState.onTopicCreated(topic)
-                state = State.List
-            }
-
-//            CreateView { state = State.List }
+    Box {
+        ListView(topicListState) { state = State.Create }
+        CreateView(visible = state == State.Create) { topic ->
+            if (topic != null) topicListState.onTopicCreated(topic)
+            state = State.List
         }
     }
 }
@@ -73,47 +69,30 @@ private fun ListView(
 
 @Composable
 private fun CreateView(
-    onCompleted: () -> Unit,
+    visible: Boolean,
+    onComplete: (Topic?) -> Unit
 ) {
-//    val currentOnCompleted by rememberUpdatedState(onCompleted)
-//
-//    val scope = rememberCoroutineScope()
-//
-//    var busy by remember {
-//        mutableStateOf(false)
-//    }
-//
-//    BackHandler(enabled = true) {
-//        if (!busy) currentOnCompleted()
-//    }
-//
-//    Column(
-//        modifier = Modifier.fillMaxSize()
-//    ) {
-//        Text(
-//            text = "Create view",
-//            modifier = Modifier.fillMaxWidth()
-//        )
-//        Button(
-//            enabled = !busy,
-//            onClick = {
-//                scope.launch {
-//                    busy = true
-//                    delay(1_500)
-//                    currentOnCompleted()
-//                }
-//            }
-//        ) {
-//            Text("Create test")
-//        }
-//        AnimatedVisibility(
-//            visible = busy,
-//            enter = fadeIn(),
-//            exit = fadeOut(),
-//        ) {
-//            CircularProgressIndicator(
-//                modifier = Modifier.align(Alignment.CenterHorizontally)
-//            )
-//        }
-//    }
+    val alpha by animateFloatAsState(
+        targetValue = if (visible) 1.0f else 0.0f
+    )
+
+    Box(
+        modifier = Modifier.background(Color.Black.copy(alpha = alpha * 0.10f)),
+    ) {
+        val spec = remember {
+            spring(
+                dampingRatio = Spring.DampingRatioNoBouncy,
+                stiffness = Spring.StiffnessLow,
+                visibilityThreshold = IntOffset.VisibilityThreshold
+            )
+        }
+
+        AnimatedVisibility(
+            visible = visible,
+            enter = slideInVertically(spec) { it / 2 },
+            exit = slideOutVertically(spec) { it / 2 },
+        ) {
+            TopicCreate(onComplete = onComplete)
+        }
+    }
 }
