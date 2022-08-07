@@ -18,8 +18,8 @@ val topicRemoteModule = module {
         TopicRemote(get(), get())
     } binds arrayOf(
         TopicAPI.LoadNewest::class,
-        TopicAPI.LoadUp::class,
-        TopicAPI.LoadDown::class,
+        TopicAPI.LoadNewer::class,
+        TopicAPI.LoadOlder::class,
         TopicAPI.SaveTopics::class,
         TopicAPI.CreateTopic::class,
     )

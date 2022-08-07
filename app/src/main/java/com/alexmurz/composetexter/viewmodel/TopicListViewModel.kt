@@ -61,7 +61,7 @@ class TopicListViewModel :
     }
 
     fun addExternalTopics(topics: Set<Topic>) {
-        context.addTopics(topics)
+        context.addItems(topics)
         addTopics(topics)
     }
 
@@ -86,7 +86,7 @@ class TopicListViewModel :
             mIsUpdating.withFlag {
                 log("update - get and add topics ...")
                 do {
-                    runForTopics { service.updateTopics(context) }
+                    runForTopics { service.loadNewer(context) }
                 } while (!context.upToDate)
             } ?: log("update - skipped, busy")
             log("update - complete")
@@ -105,7 +105,7 @@ class TopicListViewModel :
         scope.launch {
             mIsLoadingMore.withFlag {
                 log("loadMore - get and add topics ...")
-                runForTopics { service.loadMoreTopics(context) }
+                runForTopics { service.loadOlder(context) }
             } ?: log("loadMore - skipped, busy")
 
             log("loadMore - complete")

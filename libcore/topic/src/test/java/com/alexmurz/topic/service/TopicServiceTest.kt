@@ -9,9 +9,9 @@ import org.junit.Test
 
 private class ListTopicsStorage(
     private val list: MutableList<Topic>
-) : TopicAPI.LoadDown,
+) : TopicAPI.LoadOlder,
     TopicAPI.LoadNewest,
-    TopicAPI.LoadUp,
+    TopicAPI.LoadNewer,
     TopicAPI.SaveTopics,
     TopicAPI.CreateTopic {
 
@@ -58,8 +58,8 @@ private class ListTopicsStorage(
 
 private object StubTopicsStorage :
     TopicAPI.LoadNewest,
-    TopicAPI.LoadDown,
-    TopicAPI.LoadUp,
+    TopicAPI.LoadOlder,
+    TopicAPI.LoadNewer,
     TopicAPI.SaveTopics,
     TopicAPI.CreateTopic {
 

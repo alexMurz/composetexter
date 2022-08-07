@@ -11,8 +11,8 @@ class TopicRemote(
     connectivityWatcher: ConnectivityWatcher,
 ) : BaseRemote(connectivityWatcher),
     TopicAPI.LoadNewest,
-    TopicAPI.LoadDown,
-    TopicAPI.LoadUp,
+    TopicAPI.LoadOlder,
+    TopicAPI.LoadNewer,
     TopicAPI.CreateTopic {
 
     override suspend fun loadNewestTopics(limit: Int): Set<Topic> = checkGET {

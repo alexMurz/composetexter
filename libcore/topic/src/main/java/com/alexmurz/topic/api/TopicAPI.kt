@@ -12,7 +12,7 @@ interface TopicAPI {
         suspend fun loadNewestTopics(limit: Int): Set<Topic>
     }
 
-    interface LoadDown {
+    interface LoadOlder {
         /**
          * Get topics starting from `date` and take up to `limit` older topics
          * Exclude topic at exact date
@@ -20,7 +20,7 @@ interface TopicAPI {
         suspend fun loadDownTopics(date: CATime, limit: Int): Set<Topic>
     }
 
-    interface LoadUp {
+    interface LoadNewer {
         /**
          * Get new topics starting from `date` up to `limit`
          * Exclude topic at exact date

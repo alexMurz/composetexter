@@ -16,8 +16,8 @@ class RoomTopicStorage(
     private val dao: TopicDao,
     private val mapper: TopicEntityMapper,
 ) : TopicAPI.LoadNewest,
-    TopicAPI.LoadUp,
-    TopicAPI.LoadDown,
+    TopicAPI.LoadNewer,
+    TopicAPI.LoadOlder,
     TopicAPI.SaveTopics,
     Loggable by AndroidLoggable("RoomTopicStorage") {
 
