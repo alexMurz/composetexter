@@ -36,7 +36,7 @@ fun TopicCreate(
     val scope = rememberCoroutineScope()
 
     val currentOnHeaderClicker by rememberUpdatedState(onHeaderClicker)
-    val currentOnComplete = rememberUpdatedState(onComplete)
+    val currentOnComplete by rememberUpdatedState(onComplete)
 
     val titleValue by viewModel.titleFieldStateFlow.collectAsState()
     val messageValue by viewModel.messageFieldStateFlow.collectAsState()
@@ -53,7 +53,7 @@ fun TopicCreate(
             busy = true
             val topic = viewModel.createTopic()
             busy = false
-            if (topic != null) currentOnComplete.value(topic)
+            if (topic != null) currentOnComplete(topic)
         }
     }
 

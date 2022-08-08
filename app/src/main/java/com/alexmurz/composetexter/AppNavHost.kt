@@ -39,9 +39,9 @@ fun AppNavHost() {
             arguments = listOf(
                 navArgument("src") { type = NavType.LongType }
             ),
-        ) { startEntry ->
+        ) { stackEntry ->
             val parent = requireNotNull(
-                startEntry.arguments?.getLong("src")?.let(MessageChainParent::of)
+                stackEntry.arguments?.getLong("src")?.let(MessageChainParent::of)
             ) {
                 "Cannot open message feed without parent id"
             }
