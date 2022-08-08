@@ -8,8 +8,6 @@ import com.alexmurz.message.model.MessageEntity
 import com.alexmurz.messages.api.MessageAPI
 import com.alexmurz.messages.model.Message
 import com.alexmurz.messages.model.MessageChainParent
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.SendChannel
 
 class RoomMessageStorage(
     private val dao: MessageDao,
@@ -28,19 +26,19 @@ class RoomMessageStorage(
         mapTo(mutableSetOf(), mapper::fromEntity)
 
     override suspend fun loadNewest(limit: Int, parent: MessageChainParent): Set<Message> =
-        dao.newest(parent.packedId, limit).mapEntities()
+        dao.newest(parent.id, limit).mapEntities()
 
     override suspend fun loadNewer(
         limit: Int,
         parent: MessageChainParent,
         date: CATime
-    ): Set<Message> = dao.loadNewer(parent.packedId, date.timestamp, limit).mapEntities()
+    ): Set<Message> = dao.loadNewer(parent.id, date.timestamp, limit).mapEntities()
 
     override suspend fun loadOlder(
         limit: Int,
         parent: MessageChainParent,
         date: CATime
-    ): Set<Message> = dao.loadOlder(parent.packedId, date.timestamp, limit).mapEntities()
+    ): Set<Message> = dao.loadOlder(parent.id, date.timestamp, limit).mapEntities()
 
     override suspend fun save(parent: MessageChainParent, messages: Iterable<Message>) =
         save.send(messages.map { mapper.toEntity(parent, it) })

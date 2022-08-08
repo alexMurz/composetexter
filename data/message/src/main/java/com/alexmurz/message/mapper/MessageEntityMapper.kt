@@ -20,7 +20,7 @@ interface MessageEntityMapper {
 
         override fun toEntity(parent: MessageChainParent, message: Message): MessageEntity = MessageEntity(
             id = message.id,
-            parentId = parent.packedId,
+            parentId = parent.id,
             message = message.message,
             dateCreated = message.dateCreated.timestamp,
             dateUpdated = message.dateUpdated.timestamp,

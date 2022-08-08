@@ -11,13 +11,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.alexmurz.composetexter.ui.topic.TopicCreate
+import com.alexmurz.composetexter.ui.topic.TopicList
+import com.alexmurz.composetexter.ui.topic.rememberTopicListState
+import com.alexmurz.messages.model.MessageChainParent
 import kotlinx.coroutines.launch
 
 private val peekHeight = 50.dp
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun TopicListScreen() {
+fun TopicListScreen(
+    openMessageChain: (MessageChainParent) -> Unit
+) {
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
 
@@ -38,7 +44,12 @@ fun TopicListScreen() {
                     .fillMaxSize()
                     .padding(it)
             ) {
-                TopicList(topicListState)
+                TopicList(
+                    state = topicListState,
+                    onTopicClicked = {
+                        openMessageChain(it.messageChainParent)
+                    }
+                )
             }
         },
         sheetContent = {

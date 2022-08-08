@@ -20,7 +20,7 @@ import com.alexmurz.composetexter.viewmodel.MessageViewModel
 import com.alexmurz.messages.model.MessageChainParent
 
 private inline val MessageChainParent.viewModelKey: String
-    get() = "MessageChainParent(${packedId})"
+    get() = "MessageChainParent(${id})"
 
 @Composable
 fun MessageList(

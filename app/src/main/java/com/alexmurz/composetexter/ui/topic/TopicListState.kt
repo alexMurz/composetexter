@@ -1,4 +1,4 @@
-package com.alexmurz.composetexter.ui
+package com.alexmurz.composetexter.ui.topic
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState

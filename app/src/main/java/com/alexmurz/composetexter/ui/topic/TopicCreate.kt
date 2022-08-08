@@ -1,4 +1,4 @@
-package com.alexmurz.composetexter.ui
+package com.alexmurz.composetexter.ui.topic
 
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.fadeIn
@@ -52,11 +52,8 @@ fun TopicCreate(
         scope.launch {
             busy = true
             val topic = viewModel.createTopic()
-            if (topic != null) {
-                currentOnComplete.value(topic)
-            } else {
-                busy = false
-            }
+            busy = false
+            if (topic != null) currentOnComplete.value(topic)
         }
     }
 

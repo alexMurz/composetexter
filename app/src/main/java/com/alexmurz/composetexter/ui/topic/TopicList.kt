@@ -1,4 +1,4 @@
-package com.alexmurz.composetexter.ui
+package com.alexmurz.composetexter.ui.topic
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
@@ -16,9 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.alexmurz.composetexter.libcore.CATime
-import com.alexmurz.composetexter.ui.topic.TopicView
 import com.alexmurz.composetexter.effect.LazyListLoadMoreEffect
+import com.alexmurz.composetexter.libcore.CATime
 import com.alexmurz.topic.model.Topic
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -26,12 +25,13 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 private const val LOADING_THRESHOLD = 5
 
 // List keys
-private const val NO_CONTENT = -1
-private const val PROGRESS_LOADER = -2
+private const val NO_CONTENT = "NO_CONTENT"
+private const val PROGRESS_LOADER = "PROGRESS"
 
 @Composable
 fun TopicList(
     state: TopicListState = rememberTopicListState(),
+    onTopicClicked: ((Topic) -> Unit)? = null,
 ) {
     val viewModel = state.viewModel
     val listState = state.lazyListState
@@ -73,13 +73,19 @@ fun TopicList(
                     NoContent()
                 }
             } else {
-                items(content.size) {
-                    val bottomSeparator = it < content.size - 1
-                    TopicView(
-                        topic = content[it],
-                        bottomSeparator = bottomSeparator
-                    )
-                }
+                items(
+                    count = content.size,
+                    key = { content[it].id },
+                    itemContent = {
+                        val bottomSeparator = it < content.size - 1
+                        val topic = content[it]
+                        TopicView(
+                            topic = topic,
+                            bottomSeparator = bottomSeparator,
+                            onClick = { onTopicClicked?.invoke(topic) }
+                        )
+                    },
+                )
 
                 item(key = PROGRESS_LOADER) {
                     AnimatedVisibility(visible = isLoadingMore) {
