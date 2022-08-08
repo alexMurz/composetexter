@@ -39,6 +39,7 @@ internal fun TopicView(
     ) {
         LayoutDependentColumn(
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(
                     end = PADDING.right,
                     bottom = PADDING.bottom,

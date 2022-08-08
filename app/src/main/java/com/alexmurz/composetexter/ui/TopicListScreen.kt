@@ -1,98 +1,62 @@
 package com.alexmurz.composetexter.ui
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.VisibilityThreshold
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.IntOffset
-import com.alexmurz.topic.model.Topic
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 
-private enum class State {
-    List, Create;
-}
+private val peekHeight = 50.dp
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TopicListScreen() {
-    var state by remember {
-        mutableStateOf(State.List)
-    }
+    val scope = rememberCoroutineScope()
+    val scaffoldState = rememberBottomSheetScaffoldState()
 
     val topicListState = rememberTopicListState()
 
-    Box {
-        ListView(topicListState) { state = State.Create }
-        CreateView(visible = state == State.Create) { topic ->
-            if (topic != null) topicListState.onTopicCreated(topic)
-            state = State.List
+    BackHandler(enabled = scaffoldState.bottomSheetState.isExpanded) {
+        scope.launch {
+            scaffoldState.bottomSheetState.collapse()
         }
     }
-}
 
-@Composable
-private fun ListView(
-    topicListState: TopicListState,
-    onCreateTopicClicked: () -> Unit
-) {
-    val currentOnCreateTopicClicked by rememberUpdatedState(onCreateTopicClicked)
-
-    Scaffold(
-        scaffoldState = rememberScaffoldState(),
-        floatingActionButtonPosition = FabPosition.End,
-        floatingActionButton = {
-            Button(onClick = currentOnCreateTopicClicked) {
-                Text("+")
+    BottomSheetScaffold(
+        scaffoldState = scaffoldState,
+        sheetPeekHeight = peekHeight,
+        content = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it)
+            ) {
+                TopicList(topicListState)
             }
-        }
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
-        ) {
-            TopicList(topicListState)
-        }
-    }
-}
-
-@Composable
-private fun CreateView(
-    visible: Boolean,
-    onComplete: (Topic?) -> Unit
-) {
-    val alpha by animateFloatAsState(
-        targetValue = if (visible) 1.0f else 0.0f
-    )
-
-    Box(
-        modifier = Modifier.background(Color.Black.copy(alpha = alpha * 0.10f)),
-    ) {
-        val spec = remember {
-            spring(
-                dampingRatio = Spring.DampingRatioNoBouncy,
-                stiffness = Spring.StiffnessLow,
-                visibilityThreshold = IntOffset.VisibilityThreshold
+        },
+        sheetContent = {
+            TopicCreate(
+                headerHeight = peekHeight,
+                onHeaderClicker = {
+                    scope.launch {
+                        scaffoldState.bottomSheetState.expand()
+                    }
+                },
+                onComplete = { topic ->
+                    if (topic != null) topicListState.onTopicCreated(topic)
+                    scope.launch {
+                        scaffoldState.bottomSheetState.collapse()
+                    }
+                }
             )
         }
+    )
 
-        AnimatedVisibility(
-            visible = visible,
-            enter = slideInVertically(spec) { it / 2 },
-            exit = slideOutVertically(spec) { it / 2 },
-        ) {
-            TopicCreate(onComplete = onComplete)
-        }
-    }
 }

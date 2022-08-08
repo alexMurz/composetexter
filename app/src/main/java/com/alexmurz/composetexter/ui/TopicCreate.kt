@@ -1,7 +1,6 @@
 package com.alexmurz.composetexter.ui
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
@@ -16,8 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alexmurz.composetexter.R
@@ -28,10 +29,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun TopicCreate(
     viewModel: TopicCreateViewModel = viewModel(),
+    headerHeight: Dp = Dp.Unspecified,
+    onHeaderClicker: (() -> Unit)? = null,
     onComplete: (Topic?) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
 
+    val currentOnHeaderClicker by rememberUpdatedState(onHeaderClicker)
     val currentOnComplete = rememberUpdatedState(onComplete)
 
     val titleValue by viewModel.titleFieldStateFlow.collectAsState()
@@ -65,49 +69,44 @@ fun TopicCreate(
         }
     )
 
-    BackHandler {
-        if (!busy) currentOnComplete.value(null)
-    }
-
-    val outerBoxModifier = remember {
-        Modifier
-            .fillMaxSize()
-            .clickable(
-                interactionSource = MutableInteractionSource(),
-                indication = null,
-                onClick = {
-                    focus.clearFocus(true)
-                    if (!busy) currentOnComplete.value(null)
-                }
-            )
-    }
-
-    Box(modifier = outerBoxModifier) {
-        val surfaceModifier = remember {
-            Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .align(Alignment.BottomCenter)
-                .clickable(
-                    interactionSource = MutableInteractionSource(),
-                    indication = null,
-                    onClick = {}
-                )
-        }
-        Surface(
-            modifier = surfaceModifier,
-            elevation = 20.dp,
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        elevation = 20.dp,
+    ) {
+        Column(
+            modifier = Modifier.padding(bottom = 20.dp),
         ) {
-            Column(
-                modifier = Modifier.padding(bottom = 20.dp),
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .height(headerHeight)
+                    .fillMaxWidth()
+                    .clickable(
+                        interactionSource = remember {
+                            MutableInteractionSource()
+                        },
+                        indication = null,
+                        onClickLabel = "Create Topic Header",
+                        role = Role.Tab,
+                        onClick = { currentOnHeaderClicker?.invoke() },
+                    )
             ) {
-                AnimatedVisibility(
-                    visible = busy,
+                val animationState = remember {
+                    MutableTransitionState(false)
+                }
+                animationState.targetState = busy
+
+                androidx.compose.animation.AnimatedVisibility(
+                    visibleState = animationState,
                     enter = fadeIn(),
                     exit = fadeOut(),
                 ) {
                     LinearProgressIndicator(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.TopCenter)
                     )
                 }
 
@@ -115,43 +114,43 @@ fun TopicCreate(
                     text = stringResource(id = R.string.create_topic),
                     style = MaterialTheme.typography.h6,
                     modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
+                        .align(Alignment.Center)
                         .padding(
                             top = 10.dp,
                             bottom = 10.dp
                         ),
                 )
+            }
 
-                Field(
-                    value = titleValue.value,
-                    placeholder = stringResource(id = R.string.title),
-                    busy = busy,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Next,
-                    ),
-                    keyboardActions = keyboardActions,
-                    onValueChanged = { viewModel.onTitleChanged(it) }
-                )
-                Field(
-                    value = messageValue.value,
-                    placeholder = stringResource(id = R.string.message),
-                    busy = busy,
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Go,
-                    ),
-                    keyboardActions = keyboardActions,
-                    onValueChanged = { viewModel.onMessageChanged(it) }
-                )
+            Field(
+                value = titleValue.value,
+                placeholder = stringResource(id = R.string.title),
+                busy = busy,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                ),
+                keyboardActions = keyboardActions,
+                onValueChanged = { viewModel.onTitleChanged(it) }
+            )
+            Field(
+                value = messageValue.value,
+                placeholder = stringResource(id = R.string.message),
+                busy = busy,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Go,
+                ),
+                keyboardActions = keyboardActions,
+                onValueChanged = { viewModel.onMessageChanged(it) }
+            )
 
-                Button(
-                    modifier = Modifier.align(Alignment.End),
-                    enabled = !busy,
-                    onClick = createTopicAction
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.create),
-                    )
-                }
+            Button(
+                modifier = Modifier.align(Alignment.End),
+                enabled = !busy,
+                onClick = createTopicAction
+            ) {
+                Text(
+                    text = stringResource(id = R.string.create),
+                )
             }
         }
     }

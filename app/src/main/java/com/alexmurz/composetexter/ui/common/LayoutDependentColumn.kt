@@ -11,6 +11,7 @@ import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.constrainWidth
 import androidx.compose.ui.unit.dp
 import com.alexmurz.composetexter.libcore.util.Pool
 import com.alexmurz.composetexter.libcore.util.withValue
@@ -74,16 +75,17 @@ fun LayoutDependentColumn(
         val intersection: Int
 
         withScope { scope ->
+            val itemConstraints = constraints.copy(minWidth = 0)
             primaryPlaceables = subcompose(PRIMARY_CONTENT) {
                 primaryContent(scope)
             }.map {
-                it.measure(constraints)
+                it.measure(itemConstraints)
             }
 
             dependentPlaceables = subcompose(DEPENDENT_CONTENT) {
                 dependentContent()
             }.map {
-                it.measure(constraints)
+                it.measure(itemConstraints)
             }
 
             intersection = findContentIntersection(
@@ -99,8 +101,9 @@ fun LayoutDependentColumn(
 
 
         val totalWidth = primarySize.width + dependentSize.width
-        val width = if (totalWidth < constraints.maxWidth) totalWidth
+        val subWidth = if (totalWidth < constraints.maxWidth) totalWidth
         else max(primarySize.width, dependentSize.width)
+        val width = constraints.constrainWidth(subWidth)
 
         layout(
             width = width,
@@ -219,6 +222,63 @@ private fun Preview2() {
                 )
                 Text(
                     "Subcontent 3",
+                    style = MaterialTheme.typography.caption,
+                )
+            }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun Preview3() {
+    Box(
+        modifier = Modifier
+            .width(200.dp)
+    ) {
+        LayoutDependentColumn(
+            primaryContent = {
+                Text(
+                    "Title",
+                    style = MaterialTheme.typography.body1,
+                )
+                Text(
+                    "Message ",
+                    style = MaterialTheme.typography.body2,
+                    onTextLayout = ::onTextMeasured
+                )
+            },
+            dependentContent = {
+                Text(
+                    "Sub",
+                    style = MaterialTheme.typography.caption,
+                )
+            }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun Preview4() {
+    Box {
+        LayoutDependentColumn(
+            modifier = Modifier
+                .width(200.dp),
+            primaryContent = {
+                Text(
+                    "Title",
+                    style = MaterialTheme.typography.body1,
+                )
+                Text(
+                    "Message ",
+                    style = MaterialTheme.typography.body2,
+                    onTextLayout = ::onTextMeasured
+                )
+            },
+            dependentContent = {
+                Text(
+                    "Sub",
                     style = MaterialTheme.typography.caption,
                 )
             }
