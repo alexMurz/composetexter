@@ -51,22 +51,17 @@ abstract class CommonSetBasedService<T, CTX>
         // requireInitialization insures that context.localBoundary.upper == true
         requireInitialization(context)?.let { return it }
 
-        if (context.upToDate) return emptySet()
-
         val reference = context.getNewerReference()
         val loadedData = mutableSetOf<T>()
 
-        when {
-            // No items locally available, load newest from remote
-            reference == null -> {
-                loadedData += initializeFromRemote(context)
-            }
+        // No items locally available, load newest from remote
+        if (reference == null) {
+            loadedData += initializeFromRemote(context)
+        } else {
             // remote upper boundary is not reached
-            !context.remoteBoundary.upper -> {
-                loadedData += remoteLoadNewer(context, reference)
-                localSave(context, loadedData)
-                context::remoteBoundary.update(upper = loadedData.isEmpty())
-            }
+            loadedData += remoteLoadNewer(context, reference)
+            localSave(context, loadedData)
+            context::remoteBoundary.update(upper = loadedData.isEmpty())
         }
 
         context.addItems(loadedData)
