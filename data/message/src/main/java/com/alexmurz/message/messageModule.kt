@@ -4,6 +4,7 @@ import com.alexmurz.message.local.RoomMessageStorage
 import com.alexmurz.message.mapper.MessageEntityMapper
 import com.alexmurz.message.remote.NoopRemote
 import com.alexmurz.messages.api.MessageAPI
+import com.alexmurz.messages.service.MessageService
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.binds
@@ -32,4 +33,16 @@ val messageModule = module {
         MessageAPI.LoadOlder::class,
         MessageAPI.Post::class,
     )
+
+    single {
+        MessageService(
+            localLoadNewest = get(LOCAL_QUALIFIER),
+            localLoadOlder = get(LOCAL_QUALIFIER),
+            localSave = get(LOCAL_QUALIFIER),
+            remoteLoadNewest = get(REMOTE_QUALIFIER),
+            remoteLoadNewer = get(REMOTE_QUALIFIER),
+            remoteLoadOlder = get(REMOTE_QUALIFIER),
+            remotePost = { TODO() }
+        )
+    }
 }

@@ -44,7 +44,7 @@ class RoomTopicStorage(
     override suspend fun loadDownTopics(date: CATime, limit: Int): Set<Topic> {
         log("loadDownTopics(date=$date, limit=$limit) start ...")
         return dao.loadDown(date.timestamp, limit).mapTo(mutableSetOf(), mapper::fromEntity).also {
-            log("loadDownTopics(date=$date, limit=$limit) complete")
+            log("loadDownTopics(date=$date, limit=$limit) complete with ${it.size}")
         }
     }
 
