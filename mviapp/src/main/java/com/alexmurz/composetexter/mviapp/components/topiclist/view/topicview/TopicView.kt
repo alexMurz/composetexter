@@ -1,4 +1,4 @@
-package com.alexmurz.composetexter.mviapp.components.topiclist.view
+package com.alexmurz.composetexter.mviapp.components.topiclist.view.topicview
 
 import android.content.Context
 import android.content.res.ColorStateList
@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintProperties
 import com.alexmurz.composetexter.mviapp.utils.add
 import com.alexmurz.composetexter.mviapp.utils.dpToPx
+import com.alexmurz.composetexter.mviapp.utils.matchParent
 import com.google.android.material.color.MaterialColors
 
 private const val PADDING_LEFT = 8
@@ -60,32 +61,32 @@ class TopicView(
         }
     }
 
-    val message = add(AppCompatTextView(context)) {
-        id = MESSAGE
+    val messageContainer = add(ConstraintLayout(context)) {
         layoutParams = LayoutParams(
-            ConstraintProperties.WRAP_CONTENT,
+            ConstraintProperties.MATCH_CONSTRAINT,
             ConstraintProperties.WRAP_CONTENT,
         ).apply {
             leftToLeft = PARENT
             topToBottom = TITLE
+            rightToRight = PARENT
         }
+
+//        val pad = dpToPx(8)
+//        val corner = dpToPx(14)
+//        setPadding(pad, pad, pad, pad)
+//
+//        background = GradientDrawable().apply {
+//            setColor(Color.LTGRAY)
+//            cornerRadius = corner.toFloat()
+//        }
     }
 
-    val time = add(AppCompatTextView(context)) {
-        id = TIME
-        layoutParams = LayoutParams(
-            ConstraintProperties.WRAP_CONTENT,
-            ConstraintProperties.WRAP_CONTENT,
-        ).apply {
-            rightToRight = PARENT
-            topToBottom = MESSAGE
-        }
+    val messageTimeText = messageContainer.add(TwinTextView(context)) {
+        matchParent()
     }
 
     companion object {
         private const val PARENT = LayoutParams.PARENT_ID
         private const val TITLE = 1
-        private const val MESSAGE = 2
-        private const val TIME = 3
     }
 }

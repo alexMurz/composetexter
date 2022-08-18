@@ -3,6 +3,7 @@ package com.alexmurz.composetexter.mviapp.components.topiclist.view
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import com.alexmurz.composetexter.mviapp.components.topiclist.view.topicview.TopicView
 
 object TopicItemCallback : DiffUtil.ItemCallback<TopicItemModel>() {
     override fun areItemsTheSame(oldItem: TopicItemModel, newItem: TopicItemModel): Boolean =

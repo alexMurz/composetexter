@@ -27,6 +27,11 @@ fun View.dpToPx(dp: Int): Int {
     return (dp * d).toInt()
 }
 
+fun View.spToPx(sp: Int): Int {
+    val d = context.resources.displayMetrics.scaledDensity
+    return (sp * d).toInt()
+}
+
 /**
  * Scroll to end events
  *
