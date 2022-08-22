@@ -10,9 +10,10 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintProperties
-import com.alexmurz.composetexter.mviapp.utils.add
-import com.alexmurz.composetexter.mviapp.utils.dpToPx
-import com.alexmurz.composetexter.mviapp.utils.matchParent
+import com.alexmurz.composetexter.mviapp.utils.ui.TwinTextView
+import com.alexmurz.composetexter.mviapp.utils.ui.add
+import com.alexmurz.composetexter.mviapp.utils.ui.dpToPxi
+import com.alexmurz.composetexter.mviapp.utils.ui.matchParent
 import com.google.android.material.color.MaterialColors
 
 private const val PADDING_LEFT = 8
@@ -43,10 +44,10 @@ class TopicView(
         )
 
         setPadding(
-            dpToPx(PADDING_LEFT),
-            dpToPx(PADDING_TOP),
-            dpToPx(PADDING_RIGHT),
-            dpToPx(PADDING_BOTTOM),
+            dpToPxi(PADDING_LEFT),
+            dpToPxi(PADDING_TOP),
+            dpToPxi(PADDING_RIGHT),
+            dpToPxi(PADDING_BOTTOM),
         )
     }
 

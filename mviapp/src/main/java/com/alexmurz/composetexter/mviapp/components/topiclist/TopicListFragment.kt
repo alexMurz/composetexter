@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.alexmurz.composetexter.mviapp.components.topiclist.view.TopicItemModel
 import com.alexmurz.composetexter.mviapp.components.topiclist.view.TopicListAdapter
 import com.alexmurz.composetexter.mviapp.components.topiclist.view.TopicListUi
-import com.alexmurz.composetexter.mviapp.utils.loadMores
+import com.alexmurz.composetexter.mviapp.utils.ui.loadMores
 import com.alexmurz.topic.model.Topic
 import com.jakewharton.rxbinding4.swiperefreshlayout.refreshes
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers

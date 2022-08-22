@@ -1,7 +1,8 @@
-package com.alexmurz.composetexter.mviapp.components.topiclist.view.topicview
+package com.alexmurz.composetexter.mviapp.utils.ui
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Build
 import android.text.Layout
 import android.text.StaticLayout
@@ -9,8 +10,6 @@ import android.text.TextPaint
 import android.text.TextUtils
 import android.view.View
 import androidx.core.graphics.withTranslation
-import com.alexmurz.composetexter.mviapp.utils.dpToPx
-import com.alexmurz.composetexter.mviapp.utils.spToPx
 import kotlin.math.max
 import kotlin.math.min
 
@@ -99,14 +98,25 @@ class TwinTextView(
     private var rightXOffset: Float = 0f
     private var rightYOffset: Float = 0f
 
+
     private val leftPaint = TextPaint().apply {
-        textSize = spToPx(16).toFloat()
+        textSize = spToPx(16f)
     }
     private val rightPaint = TextPaint().apply {
-        textSize = spToPx(12).toFloat()
+        textSize = spToPx(12f)
+        color = Color.DKGRAY
     }
 
+
+    var leftTextSize by leftPaint::textSize
+    var leftTextColor by leftPaint::color
+
+    var rightTextSize by rightPaint::textSize
+    var rightTextColor by rightPaint::color
+
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+
         val maxTextWidth = MeasureSpec.getSize(widthMeasureSpec)
         val minTextWidth = if (MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY) {
             maxTextWidth
@@ -136,7 +146,7 @@ class TwinTextView(
             b = rightLayout,
             maxWidth = maxTextWidth,
             minWidth = minTextWidth,
-            margin = dpToPx(4)
+            margin = dpToPxi(4)
         )
 
         // Left width might be > maxTextWidth when its trailed by spaces

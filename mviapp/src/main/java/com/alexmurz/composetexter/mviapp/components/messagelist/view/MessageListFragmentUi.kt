@@ -7,8 +7,8 @@ import android.util.AttributeSet
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.alexmurz.composetexter.mviapp.utils.add
-import com.alexmurz.composetexter.mviapp.utils.matchParent
+import com.alexmurz.composetexter.mviapp.utils.ui.add
+import com.alexmurz.composetexter.mviapp.utils.ui.matchParent
 
 class MessageListFragmentUi(
     context: Context,

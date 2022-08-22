@@ -1,6 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package com.alexmurz.composetexter.mviapp.utils
+package com.alexmurz.composetexter.mviapp.utils.ui
 
 import android.view.View
 import android.view.ViewGroup
@@ -22,14 +22,14 @@ inline fun <T : View> ViewGroup.add(view: T, apply: T.() -> Unit): T {
     return view
 }
 
-fun View.dpToPx(dp: Int): Int {
+fun View.dpToPxi(dp: Int): Int {
     val d = context.resources.displayMetrics.density
     return (dp * d).toInt()
 }
 
-fun View.spToPx(sp: Int): Int {
+fun View.spToPx(sp: Float): Float {
     val d = context.resources.displayMetrics.scaledDensity
-    return (sp * d).toInt()
+    return sp * d
 }
 
 /**
@@ -38,7 +38,10 @@ fun View.spToPx(sp: Int): Int {
  * Only supported for LinearLayoutManager
  */
 fun RecyclerView.loadMores(threshold: Int): Observable<*> {
-    val layoutManager = layoutManager as LinearLayoutManager
+    val layoutManager = requireNotNull(layoutManager as? LinearLayoutManager) {
+        "RecyclerView.loadMores only supported for LinearLayoutManager"
+    }
+
     return scrollEvents()
         .map {
             adapter?.itemCount?.let { itemCount ->
