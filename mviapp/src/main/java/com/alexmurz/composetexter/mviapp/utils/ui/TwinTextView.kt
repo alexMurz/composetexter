@@ -151,8 +151,9 @@ class TwinTextView(
 
         // Left width might be > maxTextWidth when its trailed by spaces
         val measuredWidth = run {
-            val subtotal = xStart + rightWidth
-            min(subtotal, maxTextWidth).coerceIn(minTextWidth, maxTextWidth)
+            val leftWiseWidth = leftLayout.maxLineWidth
+            val rightWiseWidth = xStart + rightWidth
+            max(rightWiseWidth, leftWiseWidth).coerceIn(minTextWidth, maxTextWidth)
         }
         rightXOffset = (measuredWidth - rightWidth).toFloat()
         rightYOffset = (leftLayout.height + yStart).toFloat()

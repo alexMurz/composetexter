@@ -71,15 +71,6 @@ class TopicView(
             topToBottom = TITLE
             rightToRight = PARENT
         }
-
-//        val pad = dpToPx(8)
-//        val corner = dpToPx(14)
-//        setPadding(pad, pad, pad, pad)
-//
-//        background = GradientDrawable().apply {
-//            setColor(Color.LTGRAY)
-//            cornerRadius = corner.toFloat()
-//        }
     }
 
     val messageTimeText = messageContainer.add(TwinTextView(context)) {

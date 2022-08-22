@@ -16,6 +16,8 @@ inline fun View.matchParent() {
     )
 }
 
+inline fun <T : View> ViewGroup.add(view: T): T = add(view) {}
+
 inline fun <T : View> ViewGroup.add(view: T, apply: T.() -> Unit): T {
     addView(view)
     apply(view)
