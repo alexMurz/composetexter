@@ -17,6 +17,15 @@ ext {
   ]
 }
 
+tasks.withType(Test) {
+  testLogging {
+    outputs.upToDateWhen { false }
+    events "passed", "failed", "skipped", "standardError"
+    showCauses true
+    showExceptions true
+  }
+}
+
 dependencies {
   implementation "joda-time:joda-time:$joda_time_version"
   for (i in coreImplementation) implementation i

@@ -28,6 +28,17 @@ android {
   kotlinOptions {
     jvmTarget = '1.8'
   }
+
+  testOptions {
+    unitTests.all {
+      testLogging {
+        outputs.upToDateWhen { false }
+        events "passed", "failed", "skipped", "standardError"
+        showCauses true
+        showExceptions true
+      }
+    }
+  }
 }
 
 ext {
@@ -59,10 +70,16 @@ ext {
   dataKapt = [
     "androidx.room:room-compiler:$room_version",
   ]
+
+  dataTestImplementation = [
+    'junit:junit:4.13.2',
+  ]
 }
 
 dependencies {
   implementation project(path: ':libcore')
   for (i in dataImplementation) implementation i
   for (i in dataKapt) kapt i
+  for (i in dataTestImplementation) testImplementation i
+  testImplementation group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
 }
