@@ -4,6 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
+import com.alexmurz.composetexter.libcore.service.set_service.AbstractSetBasedContext
+import com.alexmurz.topic.mapper.TopicEntityMapper
+import com.alexmurz.topic.model.Topic
 import com.alexmurz.topic.model.TopicEntity
 
 @Dao

@@ -42,7 +42,7 @@ class TopicListPresenterImpl : TopicListPresenter, KoinComponent {
     private val nav by inject<AppNav>()
     private val service by inject<TopicService>()
     private val context by lazy {
-        service.createNewContext(LIMIT)
+        TopicServiceContext(LIMIT)
     }
 
     override fun subscribe(view: TopicListView, disposable: CompositeDisposable) {
@@ -90,13 +90,13 @@ class TopicListPresenterImpl : TopicListPresenter, KoinComponent {
 
     private fun observeUpdateTopicsIntent(intent: Observable<*>): Observable<Boolean> {
         return intent.runSingleTaskForBusyFlag {
-            rxSingle { service.loadNewer(context) }
+            rxSingle { service.update(context) }
         }
     }
 
     private fun observeLoadOlderTopicsIntent(intent: Observable<*>): Observable<Boolean> {
         return intent.runSingleTaskForBusyFlag {
-            rxSingle { service.loadOlder(context) }
+            rxSingle { service.loadMore(context) }
         }
     }
 
@@ -109,7 +109,7 @@ class TopicListPresenterImpl : TopicListPresenter, KoinComponent {
 
         return rxSingle {
             if (service.initialize(context).isEmpty()) {
-                service.loadNewer(context)
+                service.update(context)
             }
         }
 

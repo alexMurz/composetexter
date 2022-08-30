@@ -26,7 +26,10 @@ inline fun KMutableProperty0<Boundary>.update(
     )
 }
 
-abstract class CommonSetBasedServiceContext<T>(
+/**
+ * Abstract data set with backing set storage for data
+ */
+abstract class AbstractSetBasedContext<T>(
     /**
      * Max amount of items to load at one time
      */
@@ -38,10 +41,8 @@ abstract class CommonSetBasedServiceContext<T>(
         get() = dataSet.get()
 
     var localBoundary: Boundary = Boundary()
-        internal set
 
     var remoteBoundary: Boundary = Boundary()
-        internal set
 
     val initialized: Boolean
         // localBoundary.upper sets to true during initialization

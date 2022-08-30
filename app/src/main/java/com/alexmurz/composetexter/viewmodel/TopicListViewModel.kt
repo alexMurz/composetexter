@@ -8,13 +8,12 @@ import com.alexmurz.data.util.AndroidLoggable
 import com.alexmurz.data.util.Loggable
 import com.alexmurz.topic.model.Topic
 import com.alexmurz.topic.service.TopicService
+import com.alexmurz.topic.service.TopicServiceContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-
-private const val LIMIT = 25
 
 private val topicSortComparator = Comparator<Topic> { a, b ->
     a.order.compareTo(b.order)
@@ -30,14 +29,15 @@ private inline fun <T> MutableStateFlow<Boolean>.withFlag(
     }
 }
 
-class TopicListViewModel :
+class TopicListViewModel(
+    private val context: TopicServiceContext
+) :
     ViewModel(),
     KoinComponent,
     Loggable by AndroidLoggable("TopicListViewModel", enabled = true) {
 
     private val errorRelay by inject<ErrorHandler>()
     private val service by inject<TopicService>()
-    private val context by lazy { service.createNewContext(LIMIT) }
 
     private val mIsUpdating = MutableStateFlow(false)
     private val mIsLoadingMore = MutableStateFlow(false)
@@ -86,7 +86,7 @@ class TopicListViewModel :
             mIsUpdating.withFlag {
                 log("update - get and add topics ...")
                 do {
-                    val success = runForTopics { service.loadNewer(context) }
+                    val success = runForTopics { service.update(context) }
                 } while (success && !context.upToDate)
             } ?: log("update - skipped, busy")
             log("update - complete")
@@ -105,7 +105,7 @@ class TopicListViewModel :
         scope.launch {
             mIsLoadingMore.withFlag {
                 log("loadMore - get and add topics ...")
-                runForTopics { service.loadOlder(context) }
+                runForTopics { service.loadMore(context) }
             } ?: log("loadMore - skipped, busy")
 
             log("loadMore - complete")

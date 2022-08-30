@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jakewharton.rxbinding4.recyclerview.scrollEvents
 import io.reactivex.rxjava3.core.Observable
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 
 inline fun View.matchParent() {
     layoutParams = ViewGroup.LayoutParams(

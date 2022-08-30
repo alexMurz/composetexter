@@ -20,15 +20,13 @@ class TopicListState(
 }
 
 @Composable
-fun rememberTopicListState(): TopicListState {
-    val viewModel: TopicListViewModel = viewModel()
-    val lazyListState = rememberLazyListState()
-
-    return remember {
-        TopicListState(
-            viewModel = viewModel,
-            lazyListState = lazyListState,
-            initializeViewModel = AtomicBoolean(true)
-        )
-    }
+fun rememberTopicListState(
+    viewModel: TopicListViewModel = viewModel(),
+    lazyListState: LazyListState = rememberLazyListState()
+): TopicListState = remember {
+    TopicListState(
+        viewModel = viewModel,
+        lazyListState = lazyListState,
+        initializeViewModel = AtomicBoolean(true)
+    )
 }

@@ -20,6 +20,8 @@ data class Data(
     override fun equals(other: Any?) = quickCompare(other) {
         id == it.id
     }
+
+    override fun hashCode(): Int = id.hashCode()
 }
 
 internal class TestQuickCompare {
@@ -145,6 +147,11 @@ internal class TestQuickCompare {
                 testEntry.b,
             )
         }
+    }
+
+    @Test
+    fun `should fail`() {
+        assert(true)
     }
 
     @Test
