@@ -25,10 +25,10 @@ class Topic(
     fun isSameContent(other: Any?): Boolean = quickCompare(other) {
         when {
             id != it.id -> false
-            date == it.date -> false
-            title == it.title -> false
-            message == it.message -> false
-            attachments == it.attachments -> false
+            date != it.date -> false
+            title != it.title -> false
+            message != it.message -> false
+            attachments != it.attachments -> false
             else -> true
         }
     }
