@@ -108,12 +108,7 @@ class TopicListPresenterImpl : TopicListPresenter, KoinComponent {
             )
         )
 
-        return rxSingle {
-            if (useInitialize.initialize(context).isEmpty()) {
-                useUpdate.update(context)
-            }
-        }
-
+        return rxSingle<Unit> { useInitialize.initialize(context) }
             .doOnError {
                 it.printStackTrace()
             }

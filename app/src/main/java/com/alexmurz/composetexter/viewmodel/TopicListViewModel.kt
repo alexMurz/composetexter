@@ -82,6 +82,19 @@ class TopicListViewModel(
         return errorRelay.withErrorHandling(action)?.let(this::addTopics) != null
     }
 
+    fun initialize() {
+        log("initialize - Start")
+        scope.launch {
+            mIsUpdating.withFlag {
+                log("initialize - get and add topics ...")
+                do {
+                    val success = runForTopics { useInitialize.initialize(context) }
+                } while (!success)
+            }
+            log("initialize - completed")
+        }
+    }
+
     fun update() {
         log("update - Start")
         scope.launch {

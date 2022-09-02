@@ -46,9 +46,13 @@ suspend fun <T : Any> AbstractSetBasedContext<T>.initializeFromRemote(
  * Initialize context from locally available data
  */
 suspend fun <T : Any> AbstractSetBasedContext<T>.initialize(
-    localLoadNewest: LoadNewestHandle<T>
+    localLoadNewest: LoadNewestHandle<T>,
+    remoteLoadNewest: LoadNewestHandle<T>,
+    localSave: SaveHandle<T>,
 ): Set<T> {
-    return requireInitialization(localLoadNewest) ?: emptySet()
+    return requireInitialization(localLoadNewest)
+        ?.ifEmpty { initializeFromRemote(remoteLoadNewest, localSave) }
+        ?: return emptySet()
 }
 
 /**

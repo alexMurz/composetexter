@@ -48,7 +48,7 @@ fun TopicList(
     // Initial update
     LaunchedEffect(viewModel) {
         if (state.initializeViewModel.compareAndSet(true, false)) {
-            viewModel.update()
+            viewModel.initialize()
         }
     }
 
