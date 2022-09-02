@@ -4,7 +4,7 @@ import com.alexmurz.topic.model.CreateTopicRequest
 import com.alexmurz.topic.model.Topic
 import com.alexmurz.topic.service.TopicServiceContext
 
-interface TopicUseCase {
+interface TopicAction {
     /**
      * Initialize context from local data if available
      */

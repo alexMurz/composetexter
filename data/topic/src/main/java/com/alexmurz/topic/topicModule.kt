@@ -4,10 +4,10 @@ import com.alexmurz.topic.mapper.TopicEntityMapper
 import com.alexmurz.topic.remote.TopicNetworkAPI
 import com.alexmurz.topic.remote.TopicRemote
 import com.alexmurz.topic.service.TopicService
-import com.alexmurz.topic.use_case_impl.CreateTopicImpl
-import com.alexmurz.topic.use_case_impl.InitializeImpl
-import com.alexmurz.topic.use_case_impl.LoadMoreImpl
-import com.alexmurz.topic.use_case_impl.UpdateImpl
+import com.alexmurz.topic.actions.CreateTopicImpl
+import com.alexmurz.topic.actions.InitializeImpl
+import com.alexmurz.topic.actions.LoadMoreImpl
+import com.alexmurz.topic.actions.UpdateImpl
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -21,11 +21,11 @@ val topicModule = module {
         TopicRemote(api, get())
     }
 
-    // Bind use cases
-    single { CreateTopicImpl(get(), get(), get()) } bind TopicUseCase.CreateTopic::class
-    single { InitializeImpl(get(), get()) } bind TopicUseCase.Initialize::class
-    single { LoadMoreImpl(get(), get(), get()) } bind TopicUseCase.LoadMore::class
-    single { UpdateImpl(get(), get(), get()) } bind TopicUseCase.Update::class
+    // Bind implemented actions
+    single { CreateTopicImpl(get(), get(), get()) } bind TopicAction.CreateTopic::class
+    single { InitializeImpl(get(), get()) } bind TopicAction.Initialize::class
+    single { LoadMoreImpl(get(), get(), get()) } bind TopicAction.LoadMore::class
+    single { UpdateImpl(get(), get(), get()) } bind TopicAction.Update::class
 
     // Bind service
     // Not sure it should done here but for now it is

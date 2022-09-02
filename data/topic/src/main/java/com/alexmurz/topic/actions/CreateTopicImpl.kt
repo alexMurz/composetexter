@@ -1,6 +1,6 @@
-package com.alexmurz.topic.use_case_impl
+package com.alexmurz.topic.actions
 
-import com.alexmurz.topic.TopicUseCase
+import com.alexmurz.topic.TopicAction
 import com.alexmurz.topic.dao.TopicDao
 import com.alexmurz.topic.mapper.TopicEntityMapper
 import com.alexmurz.topic.model.CreateTopicRequest
@@ -12,7 +12,7 @@ internal class CreateTopicImpl(
     private val mapper: TopicEntityMapper,
     private val dao: TopicDao,
     private val remote: TopicRemote,
-) : TopicUseCase.CreateTopic {
+) : TopicAction.CreateTopic {
 
     override suspend fun createTopic(
         context: TopicServiceContext,
