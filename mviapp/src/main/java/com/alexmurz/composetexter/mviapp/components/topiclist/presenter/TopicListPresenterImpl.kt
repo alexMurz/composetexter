@@ -8,9 +8,9 @@ import com.alexmurz.composetexter.mviapp.nav_host.AppNav
 import com.alexmurz.composetexter.mviapp.nav_host.Destination
 import com.alexmurz.composetexter.mviapp.utils.BitField
 import com.alexmurz.composetexter.mviapp.utils.runSingleTaskForBusyFlag
+import com.alexmurz.topic.TopicUseCase
+import com.alexmurz.topic.TopicsContext
 import com.alexmurz.topic.model.Topic
-import com.alexmurz.topic.service.TopicService
-import com.alexmurz.topic.service.TopicServiceContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
@@ -20,15 +20,13 @@ import kotlinx.coroutines.rx3.rxSingle
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-private const val TAG = "TopicListPresenter"
-
 private const val LIMIT = 25
 
-private inline val TopicServiceContext.createSortedTopicList: List<Topic>
+private inline val TopicsContext.createSortedTopicList: List<Topic>
     get() = data.sortedByDescending { it.date }
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun TopicServiceContext.toState(
+private inline fun TopicsContext.toState(
     isLoadingNewer: Boolean = false,
     isLoadingOlder: Boolean = false,
 ): TopicListState = TopicListStateImpl(
@@ -40,9 +38,12 @@ private inline fun TopicServiceContext.toState(
 class TopicListPresenterImpl : TopicListPresenter, KoinComponent {
 
     private val nav by inject<AppNav>()
-    private val service by inject<TopicService>()
+    private val useInitialize by inject<TopicUseCase.Initialize>()
+    private val useUpdate by inject<TopicUseCase.Update>()
+    private val useLoadMore by inject<TopicUseCase.LoadMore>()
+
     private val context by lazy {
-        TopicServiceContext(LIMIT)
+        TopicsContext(LIMIT)
     }
 
     override fun subscribe(view: TopicListView, disposable: CompositeDisposable) {
@@ -90,13 +91,13 @@ class TopicListPresenterImpl : TopicListPresenter, KoinComponent {
 
     private fun observeUpdateTopicsIntent(intent: Observable<*>): Observable<Boolean> {
         return intent.runSingleTaskForBusyFlag {
-            rxSingle { service.update(context) }
+            rxSingle { useUpdate.update(context) }
         }
     }
 
     private fun observeLoadOlderTopicsIntent(intent: Observable<*>): Observable<Boolean> {
         return intent.runSingleTaskForBusyFlag {
-            rxSingle { service.loadMore(context) }
+            rxSingle { useLoadMore.loadMore(context) }
         }
     }
 
@@ -108,8 +109,8 @@ class TopicListPresenterImpl : TopicListPresenter, KoinComponent {
         )
 
         return rxSingle {
-            if (service.initialize(context).isEmpty()) {
-                service.update(context)
+            if (useInitialize.initialize(context).isEmpty()) {
+                useUpdate.update(context)
             }
         }
 

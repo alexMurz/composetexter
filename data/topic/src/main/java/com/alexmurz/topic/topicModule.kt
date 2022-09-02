@@ -3,7 +3,6 @@ package com.alexmurz.topic
 import com.alexmurz.topic.mapper.TopicEntityMapper
 import com.alexmurz.topic.remote.TopicNetworkAPI
 import com.alexmurz.topic.remote.TopicRemote
-import com.alexmurz.topic.service.TopicService
 import com.alexmurz.topic.actions.CreateTopicImpl
 import com.alexmurz.topic.actions.InitializeImpl
 import com.alexmurz.topic.actions.LoadMoreImpl
@@ -27,7 +26,6 @@ val topicModule = module {
     single { LoadMoreImpl(get(), get(), get()) } bind TopicAction.LoadMore::class
     single { UpdateImpl(get(), get(), get()) } bind TopicAction.Update::class
 
-    // Bind service
-    // Not sure it should done here but for now it is
-    single { TopicService(get(), get(), get(), get()) }
+    // Include domain module
+    includes(topicDomainModule)
 }

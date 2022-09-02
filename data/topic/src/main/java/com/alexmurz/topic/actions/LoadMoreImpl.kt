@@ -11,7 +11,7 @@ import com.alexmurz.topic.model.Topic
 import com.alexmurz.topic.remote.TopicRemote
 import com.alexmurz.topic.remote.loadNewestHandle
 import com.alexmurz.topic.remote.loadOlderHandle
-import com.alexmurz.topic.service.TopicServiceContext
+import com.alexmurz.topic.TopicsContext
 
 internal class LoadMoreImpl(
     mapper: TopicEntityMapper,
@@ -26,7 +26,7 @@ internal class LoadMoreImpl(
     private val remoteLoadNewest = remote.loadNewestHandle()
     private val remoteLoadOlder = remote.loadOlderHandle()
 
-    override suspend fun loadMore(context: TopicServiceContext): Set<Topic> = context.loadOlder(
+    override suspend fun loadMore(context: TopicsContext): Set<Topic> = context.loadOlder(
         localLoadNewest = localLoadNewest,
         localLoadOlder = localLoadOlder,
         remoteLoadNewest = remoteLoadNewest,

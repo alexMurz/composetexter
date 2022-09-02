@@ -2,28 +2,27 @@ package com.alexmurz.topic
 
 import com.alexmurz.topic.model.CreateTopicRequest
 import com.alexmurz.topic.model.Topic
-import com.alexmurz.topic.service.TopicServiceContext
 
 interface TopicAction {
     /**
      * Initialize context from local data if available
      */
     interface Initialize {
-        suspend fun initialize(context: TopicServiceContext): Set<Topic>
+        suspend fun initialize(context: TopicsContext): Set<Topic>
     }
 
     /**
      * Update topics, loading newer topics
      */
     interface Update {
-        suspend fun update(context: TopicServiceContext): Set<Topic>
+        suspend fun update(context: TopicsContext): Set<Topic>
     }
 
     /**
      * Load more older topics
      */
     interface LoadMore {
-        suspend fun loadMore(context: TopicServiceContext): Set<Topic>
+        suspend fun loadMore(context: TopicsContext): Set<Topic>
     }
 
     /**
@@ -31,7 +30,7 @@ interface TopicAction {
      */
     interface CreateTopic {
         suspend fun createTopic(
-            context: TopicServiceContext,
+            context: TopicsContext,
             createTopicRequest: CreateTopicRequest
         ): Topic
     }

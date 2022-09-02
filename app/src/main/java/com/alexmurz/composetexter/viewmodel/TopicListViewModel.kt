@@ -6,9 +6,9 @@ import com.alexmurz.composetexter.apperror.withErrorHandling
 import com.alexmurz.composetexter.libcore.util.then
 import com.alexmurz.data.util.AndroidLoggable
 import com.alexmurz.data.util.Loggable
+import com.alexmurz.topic.TopicUseCase
+import com.alexmurz.topic.TopicsContext
 import com.alexmurz.topic.model.Topic
-import com.alexmurz.topic.service.TopicService
-import com.alexmurz.topic.service.TopicServiceContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,14 +30,16 @@ private inline fun <T> MutableStateFlow<Boolean>.withFlag(
 }
 
 class TopicListViewModel(
-    private val context: TopicServiceContext
+    private val context: TopicsContext
 ) :
     ViewModel(),
     KoinComponent,
     Loggable by AndroidLoggable("TopicListViewModel", enabled = true) {
 
     private val errorRelay by inject<ErrorHandler>()
-    private val service by inject<TopicService>()
+    private val useInitialize by inject<TopicUseCase.Initialize>()
+    private val useUpdate by inject<TopicUseCase.Update>()
+    private val useLoadMore by inject<TopicUseCase.LoadMore>()
 
     private val mIsUpdating = MutableStateFlow(false)
     private val mIsLoadingMore = MutableStateFlow(false)
@@ -86,7 +88,7 @@ class TopicListViewModel(
             mIsUpdating.withFlag {
                 log("update - get and add topics ...")
                 do {
-                    val success = runForTopics { service.update(context) }
+                    val success = runForTopics { useUpdate.update(context) }
                 } while (success && !context.upToDate)
             } ?: log("update - skipped, busy")
             log("update - complete")
@@ -105,7 +107,7 @@ class TopicListViewModel(
         scope.launch {
             mIsLoadingMore.withFlag {
                 log("loadMore - get and add topics ...")
-                runForTopics { service.loadMore(context) }
+                runForTopics { useLoadMore.loadMore(context) }
             } ?: log("loadMore - skipped, busy")
 
             log("loadMore - complete")

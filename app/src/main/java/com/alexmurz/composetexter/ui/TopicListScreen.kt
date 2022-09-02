@@ -19,7 +19,7 @@ import com.alexmurz.composetexter.ui.topic.rememberTopicListState
 import com.alexmurz.composetexter.viewmodel.TopicCreateViewModel
 import com.alexmurz.composetexter.viewmodel.TopicListViewModel
 import com.alexmurz.messages.model.MessageChainParent
-import com.alexmurz.topic.service.TopicServiceContext
+import com.alexmurz.topic.TopicsContext
 import kotlinx.coroutines.launch
 
 private val peekHeight = 50.dp
@@ -32,7 +32,7 @@ fun TopicListScreen(
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
 
-    val context = remember { TopicServiceContext(25) }
+    val context = remember { TopicsContext(25) }
 
     val topicListVM: TopicListViewModel = viewModel(initializer = {
         TopicListViewModel(context)

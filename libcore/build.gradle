@@ -11,6 +11,8 @@ java {
 ext {
   coreImplementation = [
     "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines_version}",
+    // Koin
+    "io.insert-koin:koin-core:$koin_version",
   ]
   coreTestImplementation = [
     'junit:junit:4.13.2',

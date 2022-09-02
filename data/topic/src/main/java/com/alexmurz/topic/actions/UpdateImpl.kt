@@ -10,7 +10,7 @@ import com.alexmurz.topic.model.Topic
 import com.alexmurz.topic.remote.TopicRemote
 import com.alexmurz.topic.remote.loadNewerHandle
 import com.alexmurz.topic.remote.loadNewestHandle
-import com.alexmurz.topic.service.TopicServiceContext
+import com.alexmurz.topic.TopicsContext
 
 internal class UpdateImpl(
     mapper: TopicEntityMapper,
@@ -23,7 +23,7 @@ internal class UpdateImpl(
     private val remoteLoadNewest = remote.loadNewestHandle()
     private val remoteLoadNewer = remote.loadNewerHandle()
 
-    override suspend fun update(context: TopicServiceContext): Set<Topic> = context.loadNewer(
+    override suspend fun update(context: TopicsContext): Set<Topic> = context.loadNewer(
         localLoadNewest = localLoadNewest,
         remoteLoadNewest = remoteLoadNewest,
         remoteLoadNewer = remoteLoadNewer,

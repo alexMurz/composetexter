@@ -6,7 +6,7 @@ import com.alexmurz.topic.mapper.TopicEntityMapper
 import com.alexmurz.topic.model.CreateTopicRequest
 import com.alexmurz.topic.model.Topic
 import com.alexmurz.topic.remote.TopicRemote
-import com.alexmurz.topic.service.TopicServiceContext
+import com.alexmurz.topic.TopicsContext
 
 internal class CreateTopicImpl(
     private val mapper: TopicEntityMapper,
@@ -15,7 +15,7 @@ internal class CreateTopicImpl(
 ) : TopicAction.CreateTopic {
 
     override suspend fun createTopic(
-        context: TopicServiceContext,
+        context: TopicsContext,
         createTopicRequest: CreateTopicRequest
     ): Topic = remote.createTopic(
         title = createTopicRequest.title,

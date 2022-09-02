@@ -3,10 +3,10 @@ package com.alexmurz.composetexter.viewmodel
 import androidx.lifecycle.ViewModel
 import com.alexmurz.composetexter.apperror.ErrorHandler
 import com.alexmurz.composetexter.apperror.withErrorHandling
+import com.alexmurz.topic.TopicUseCase
+import com.alexmurz.topic.TopicsContext
 import com.alexmurz.topic.model.CreateTopicRequest
 import com.alexmurz.topic.model.Topic
-import com.alexmurz.topic.service.TopicService
-import com.alexmurz.topic.service.TopicServiceContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.component.KoinComponent
@@ -28,11 +28,11 @@ private fun field(
 ) = TopicCreateFieldState(value, state)
 
 class TopicCreateViewModel(
-    private val context: TopicServiceContext,
+    private val context: TopicsContext,
 ) : ViewModel(), KoinComponent {
 
     private val errorHandler by inject<ErrorHandler>()
-    private val service by inject<TopicService>()
+    private val useCreateTopic by inject<TopicUseCase.CreateTopic>()
 
     private val mTitleField = MutableStateFlow(field())
     private val mMessageField = MutableStateFlow(field())
@@ -55,9 +55,9 @@ class TopicCreateViewModel(
         val title = mTitleField.value.value
         val message = mMessageField.value.value
         val topic = errorHandler.withErrorHandling {
-            service.createTopic(
+            useCreateTopic.createTopic(
                 context = context,
-                createTopicRequest = CreateTopicRequest(
+                request = CreateTopicRequest(
                     title = title,
                     message = message,
                 )
