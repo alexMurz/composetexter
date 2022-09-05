@@ -22,7 +22,7 @@ val topicModule = module {
 
     // Bind implemented actions
     single { CreateTopicImpl(get(), get(), get()) } bind TopicAction.CreateTopic::class
-    single { InitializeImpl(get(), get()) } bind TopicAction.Initialize::class
+    single { InitializeImpl(get(), get(), get()) } bind TopicAction.Initialize::class
     single { LoadMoreImpl(get(), get(), get()) } bind TopicAction.LoadMore::class
     single { UpdateImpl(get(), get(), get()) } bind TopicAction.Update::class
 
